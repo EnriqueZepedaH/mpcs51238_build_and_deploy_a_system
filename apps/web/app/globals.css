@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-mist text-ink font-sans;
+  background-image:
+    radial-gradient(circle at top left, rgba(255, 107, 53, 0.16), transparent 32%),
+    radial-gradient(circle at top right, rgba(13, 59, 102, 0.14), transparent 28%),
+    linear-gradient(180deg, #fbf8f2 0%, #f4efe6 100%);
+  min-height: 100vh;
+}
+
+.panel {
+  @apply rounded-3xl border border-white/60 bg-white/80 backdrop-blur;
+  box-shadow: theme("boxShadow.panel");
+}
+
+.data-grid {
+  @apply grid gap-4 md:grid-cols-2 xl:grid-cols-4;
+}
+
