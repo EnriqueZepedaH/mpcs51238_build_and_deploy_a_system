@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Activity, DatabaseZap, RadioTower } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +23,11 @@ export default function HomePage() {
                 Sign in
               </button>
             </SignInButton>
+            <SignUpButton mode="modal">
+              <button className="rounded-full border border-ink/15 bg-white px-5 py-3 text-sm font-medium text-ink transition hover:border-tide hover:text-tide">
+                Sign up
+              </button>
+            </SignUpButton>
           </SignedOut>
           <SignedIn>
             <Link

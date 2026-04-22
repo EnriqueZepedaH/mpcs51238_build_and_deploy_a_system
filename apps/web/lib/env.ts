@@ -1,5 +1,4 @@
-function getRequiredEnv(name: string): string {
-  const value = process.env[name];
+function getRequiredValue(name: string, value: string | undefined): string {
 
   if (!value) {
     throw new Error(`Missing required environment variable: ${name}`);
@@ -9,9 +8,17 @@ function getRequiredEnv(name: string): string {
 }
 
 export function getPublicSupabaseEnv() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
   return {
-    url: getRequiredEnv("NEXT_PUBLIC_SUPABASE_URL"),
-    publishableKey: getRequiredEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY")
+    // Next.js only exposes NEXT_PUBLIC_* env vars to client bundles when they
+    // are referenced statically. Dynamic process.env[name] lookups break in the browser.
+    url: getRequiredValue("NEXT_PUBLIC_SUPABASE_URL", url),
+    publishableKey: getRequiredValue(
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      publishableKey
+    )
   };
 }
 

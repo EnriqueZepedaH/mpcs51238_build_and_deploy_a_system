@@ -17,11 +17,26 @@ export async function getClerkSupabaseAccessToken(
 ): Promise<string | null> {
   const template = getLegacyTemplateName();
 
-  if (template) {
-    return getToken({ template });
-  }
+  try {
+    if (template) {
+      return getToken({ template });
+    }
 
-  return getToken();
+    return getToken();
+  } catch (error) {
+    if (
+      template &&
+      error &&
+      typeof error === "object" &&
+      "clerkError" in error
+    ) {
+      throw new Error(
+        `Clerk could not find the legacy Supabase JWT template "${template}". Remove CLERK_SUPABASE_TEMPLATE from your env if you are using Supabase Third-Party Auth with Clerk, or create that template in the Clerk dashboard if you are intentionally using the legacy JWT-template flow.`
+      );
+    }
+
+    throw error;
+  }
 }
 
 export async function getClerkSupabaseAccessTokenOrThrow(
@@ -37,4 +52,3 @@ export async function getClerkSupabaseAccessTokenOrThrow(
 
   return token;
 }
-
