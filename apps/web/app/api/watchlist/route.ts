@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { isLikelyUsEquityOrEtfSymbol, normalizeSymbol } from "@market-pulse/shared";
 
 import { getMaxWatchlistSize } from "@/lib/env";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
@@ -8,10 +9,18 @@ import { getSupabaseServerClient } from "@/lib/supabase-server";
 const symbolSchema = z.object({
   symbol: z
     .string()
-    .trim()
-    .transform((value) => value.toUpperCase())
-    .refine((value) => /^[A-Z][A-Z0-9.-]{0,9}$/.test(value), {
-      message: "Use a valid US stock or ETF ticker"
+    .transform(normalizeSymbol)
+    .refine((value) => isLikelyUsEquityOrEtfSymbol(value), {
+      message: "Use a likely US stock or ETF ticker format, for example AAPL, MSFT, or BRK.B"
+    })
+});
+
+const deleteSymbolSchema = z.object({
+  symbol: z
+    .string()
+    .transform(normalizeSymbol)
+    .refine((value) => value.length > 0 && value.length <= 20, {
+      message: "Symbol is required"
     })
 });
 
@@ -80,7 +89,7 @@ export async function DELETE(request: Request) {
   }
 
   const body = await request.json();
-  const parsed = symbolSchema.safeParse(body);
+  const parsed = deleteSymbolSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid symbol" }, { status: 400 });
   }
