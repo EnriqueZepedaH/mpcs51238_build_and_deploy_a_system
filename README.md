@@ -23,11 +23,13 @@ That tradeoff is deliberate. For a portfolio project, correctness, observability
 
 ## Local development
 
-1. Copy `.env.example` to `.env.local` at the repo root.
-2. Create the Supabase schema from `supabase/schema.sql`.
-3. Install dependencies with `npm install`.
-4. Run the web app with `npm run dev -- --filter=web`.
-5. Run the worker with `npm run dev -- --filter=worker`.
+1. Install dependencies with `npm install`.
+2. Use `.env.example` as the source of truth for required variables.
+3. Create `apps/web/.env.local` with the web app's public Supabase and Clerk variables.
+4. Create `apps/worker/.env.local` with the worker's Supabase service-role and Twelve Data variables.
+5. Create the Supabase schema from `supabase/schema.sql`.
+6. Run the web app with `npm run dev -- --filter=web`.
+7. Run the worker with `npm run dev -- --filter=worker`.
 
 ## Quality gates
 
@@ -41,5 +43,13 @@ That tradeoff is deliberate. For a portfolio project, correctness, observability
 - Vercel deploys `apps/web`
 - Railway deploys `apps/worker`
 - Supabase hosts Postgres, auth-adjacent JWT integration, and Realtime
+
+## Deploy checklist
+
+1. Create one Vercel project with root directory `apps/web`.
+2. Create one Railway service with root directory `apps/worker`.
+3. Configure the environment variables documented in `docs/runbook.md`.
+4. Deploy the worker first and verify `ingestion_runs` succeeds.
+5. Deploy the web app and verify sign-in, watchlist mutations, and live updates.
 
 See `CLAUDE.md` for architecture, `docs/database-schema.md` for the data model, and `docs/runbook.md` for operational procedures.
