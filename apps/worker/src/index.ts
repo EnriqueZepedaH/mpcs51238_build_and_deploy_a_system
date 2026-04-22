@@ -1,5 +1,5 @@
-import { getWorkerEnv } from "./env";
-import { log } from "./logger";
+import { getWorkerEnv } from "./env.js";
+import { log } from "./logger.js";
 import {
   computeStaleSymbolCount,
   createIngestionRun,
@@ -7,9 +7,9 @@ import {
   finalizeIngestionRun,
   loadSymbolDemand,
   persistQuotes
-} from "./lib/supabase";
-import { rankSymbolsForPolling } from "./lib/scheduler";
-import { TwelveDataClient } from "./lib/twelve-data";
+} from "./lib/supabase.js";
+import { rankSymbolsForPolling } from "./lib/scheduler.js";
+import { TwelveDataClient } from "./lib/twelve-data.js";
 
 async function runWorkerCycle(): Promise<void> {
   const env = getWorkerEnv();
@@ -88,4 +88,3 @@ async function main(): Promise<void> {
 }
 
 void main();
-

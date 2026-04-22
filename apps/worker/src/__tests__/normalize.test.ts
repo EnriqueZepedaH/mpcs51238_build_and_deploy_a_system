@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { normalizeQuote } from "../lib/normalize";
+import { normalizeQuote } from "../lib/normalize.js";
 
 describe("normalizeQuote", () => {
   it("normalizes Twelve Data quote payloads", () => {
@@ -28,4 +28,3 @@ describe("normalizeQuote", () => {
     expect(normalized.source_timestamp).toBe("2026-04-21T14:33:00Z");
   });
 });
-

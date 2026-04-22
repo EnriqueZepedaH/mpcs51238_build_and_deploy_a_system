@@ -1,8 +1,8 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-import type { WorkerEnv } from "../env";
-import type { NormalizedQuote } from "./normalize";
-import type { SymbolDemand } from "./scheduler";
+import type { WorkerEnv } from "../env.js";
+import type { NormalizedQuote } from "./normalize.js";
+import type { SymbolDemand } from "./scheduler.js";
 
 type DbClient = SupabaseClient;
 

@@ -1,4 +1,4 @@
-import { normalizeQuote, type NormalizedQuote } from "./normalize";
+import { normalizeQuote, type NormalizedQuote } from "./normalize.js";
 
 type TwelveDataClientOptions = {
   apiKey: string;

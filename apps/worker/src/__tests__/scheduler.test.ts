@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { rankSymbolsForPolling } from "../lib/scheduler";
+import { rankSymbolsForPolling } from "../lib/scheduler.js";
 
 describe("rankSymbolsForPolling", () => {
   it("prioritizes watcher count before age", () => {
@@ -29,4 +29,3 @@ describe("rankSymbolsForPolling", () => {
     expect(selected[0]?.symbol).toBe("NVDA");
   });
 });
-
