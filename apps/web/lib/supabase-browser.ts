@@ -12,7 +12,6 @@ export function getSupabaseBrowserClient() {
   }
 
   const env = getPublicSupabaseEnv();
-  browserClient = createClient(env.url, env.anonKey);
+  browserClient = createClient(env.url, env.publishableKey);
   return browserClient;
 }
-

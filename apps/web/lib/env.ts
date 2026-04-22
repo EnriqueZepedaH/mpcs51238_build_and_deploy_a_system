@@ -11,7 +11,7 @@ function getRequiredEnv(name: string): string {
 export function getPublicSupabaseEnv() {
   return {
     url: getRequiredEnv("NEXT_PUBLIC_SUPABASE_URL"),
-    anonKey: getRequiredEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+    publishableKey: getRequiredEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY")
   };
 }
 
@@ -29,4 +29,3 @@ export function getFreshnessTargetSeconds(): number {
 export function getMaxWatchlistSize(): number {
   return Number(process.env.MAX_WATCHLIST_SIZE ?? "15");
 }
-

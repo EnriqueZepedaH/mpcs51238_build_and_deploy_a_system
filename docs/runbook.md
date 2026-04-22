@@ -3,7 +3,7 @@
 ## Environment variables
 
 - `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
 - `CLERK_SECRET_KEY`
@@ -41,4 +41,3 @@
 - revert the latest deploy on Vercel or Railway
 - restore the previous schema migration if a breaking table change was introduced
 - verify `ingestion_runs` starts succeeding again before declaring recovery
-

@@ -42,5 +42,4 @@ That tradeoff is deliberate. For a portfolio project, correctness, observability
 - Railway deploys `apps/worker`
 - Supabase hosts Postgres, auth-adjacent JWT integration, and Realtime
 
-See `CLAUDE.md` for architecture and `docs/runbook.md` for operational procedures.
-
+See `CLAUDE.md` for architecture, `docs/database-schema.md` for the data model, and `docs/runbook.md` for operational procedures.

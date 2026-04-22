@@ -58,7 +58,8 @@ create table if not exists public.ingestion_runs (
   error_details jsonb not null default '[]'::jsonb
 );
 
-create or replace view public.symbol_watchlist_rollup as
+create or replace view public.symbol_watchlist_rollup
+with (security_invoker = true) as
 select
   symbol,
   count(*)::int as watcher_count
@@ -74,19 +75,19 @@ drop policy if exists "watchlist_select_own" on public.user_watchlists;
 create policy "watchlist_select_own"
 on public.user_watchlists
 for select
-using ((auth.jwt() ->> 'sub') = clerk_user_id);
+using ((((select auth.jwt()) ->> 'sub')) = clerk_user_id);
 
 drop policy if exists "watchlist_insert_own" on public.user_watchlists;
 create policy "watchlist_insert_own"
 on public.user_watchlists
 for insert
-with check ((auth.jwt() ->> 'sub') = clerk_user_id);
+with check ((((select auth.jwt()) ->> 'sub')) = clerk_user_id);
 
 drop policy if exists "watchlist_delete_own" on public.user_watchlists;
 create policy "watchlist_delete_own"
 on public.user_watchlists
 for delete
-using ((auth.jwt() ->> 'sub') = clerk_user_id);
+using ((((select auth.jwt()) ->> 'sub')) = clerk_user_id);
 
 drop policy if exists "quotes_public_read" on public.quotes_current;
 create policy "quotes_public_read"
@@ -106,10 +107,57 @@ on public.ingestion_runs
 for select
 using (true);
 
-alter publication supabase_realtime add table public.quotes_current;
-alter publication supabase_realtime add table public.ingestion_runs;
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_rel rel
+    join pg_publication pub on pub.oid = rel.prpubid
+    join pg_class cls on cls.oid = rel.prrelid
+    join pg_namespace ns on ns.oid = cls.relnamespace
+    where pub.pubname = 'supabase_realtime'
+      and ns.nspname = 'public'
+      and cls.relname = 'quotes_current'
+  ) then
+    alter publication supabase_realtime add table public.quotes_current;
+  end if;
+end
+$$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_rel rel
+    join pg_publication pub on pub.oid = rel.prpubid
+    join pg_class cls on cls.oid = rel.prrelid
+    join pg_namespace ns on ns.oid = cls.relnamespace
+    where pub.pubname = 'supabase_realtime'
+      and ns.nspname = 'public'
+      and cls.relname = 'quotes_history'
+  ) then
+    alter publication supabase_realtime add table public.quotes_history;
+  end if;
+end
+$$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_rel rel
+    join pg_publication pub on pub.oid = rel.prpubid
+    join pg_class cls on cls.oid = rel.prrelid
+    join pg_namespace ns on ns.oid = cls.relnamespace
+    where pub.pubname = 'supabase_realtime'
+      and ns.nspname = 'public'
+      and cls.relname = 'ingestion_runs'
+  ) then
+    alter publication supabase_realtime add table public.ingestion_runs;
+  end if;
+end
+$$;
 
 create index if not exists user_watchlists_symbol_idx on public.user_watchlists(symbol);
 create index if not exists quotes_history_symbol_as_of_idx on public.quotes_history(symbol, as_of desc);
 create index if not exists ingestion_runs_started_at_idx on public.ingestion_runs(started_at desc);
-
