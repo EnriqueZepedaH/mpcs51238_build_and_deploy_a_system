@@ -47,3 +47,9 @@ Market Pulse is a multi-service realtime system that ingests stock quote data, s
 - the worker stores run metrics to make outages and degraded freshness visible
 - free-tier limits are treated as a design constraint, not an exception path
 
+## Reference data scope
+
+- v1 will maintain a limited symbol reference strategy aligned with Twelve Data Basic limits
+- the system will target US stocks plus watchlist-seen ETFs instead of a full market-wide symbol master
+- obvious junk symbols are rejected on write, but true symbol existence should be validated against reference data once the provider integration is enabled
+- full symbol-master coverage remains a backlog item because free-tier ETF coverage is incomplete and should not be overstated

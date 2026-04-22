@@ -189,6 +189,7 @@ export function DashboardClient({
 
         <div className="mt-4 flex flex-wrap gap-3 text-sm text-ink/70">
           <span>{watchlist.length} / {maxWatchlistSize} tracked symbols</span>
+          <span>Format is validated on add. Symbol existence is confirmed once market polling is configured.</span>
           {mutation.error ? <span className="text-ember">{mutation.error}</span> : null}
         </div>
       </section>
