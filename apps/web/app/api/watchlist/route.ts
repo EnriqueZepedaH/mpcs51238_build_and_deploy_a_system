@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getMaxWatchlistSize } from "@/lib/env";
-import { getSupabaseAdminClient } from "@/lib/supabase-server";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
 
 const symbolSchema = z.object({
   symbol: z
@@ -27,11 +27,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid symbol" }, { status: 400 });
   }
 
-  const supabase = getSupabaseAdminClient();
+  const supabase = await getSupabaseServerClient();
   const { count, error: countError } = await supabase
     .from("user_watchlists")
     .select("*", { count: "exact", head: true })
-    .eq("clerk_user_id", userId);
 
   if (countError) {
     return NextResponse.json({ error: countError.message }, { status: 500 });
@@ -41,7 +40,6 @@ export async function POST(request: Request) {
     const { data: existing } = await supabase
       .from("user_watchlists")
       .select("*")
-      .eq("clerk_user_id", userId)
       .eq("symbol", parsed.data.symbol)
       .maybeSingle();
 
@@ -87,11 +85,10 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid symbol" }, { status: 400 });
   }
 
-  const supabase = getSupabaseAdminClient();
+  const supabase = await getSupabaseServerClient();
   const { error } = await supabase
     .from("user_watchlists")
     .delete()
-    .eq("clerk_user_id", userId)
     .eq("symbol", parsed.data.symbol);
 
   if (error) {

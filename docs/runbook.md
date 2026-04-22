@@ -7,6 +7,7 @@
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
 - `CLERK_SECRET_KEY`
+- `NEXT_PUBLIC_CLERK_SUPABASE_TEMPLATE` (optional legacy fallback)
 - `CLERK_SUPABASE_TEMPLATE`
 - `TWELVE_DATA_API_KEY`
 - `TWELVE_DATA_BASE_URL`
@@ -19,9 +20,10 @@
 
 1. Create the database objects from `supabase/schema.sql`.
 2. Populate `.env.local`.
-3. Start the frontend and confirm Clerk renders sign-in controls.
-4. Start the worker and verify `ingestion_runs` receives a successful row.
-5. Add a symbol to a user watchlist and confirm `quotes_current` updates.
+3. Configure Supabase Third-Party Auth with Clerk. If you are using the older JWT template flow, set the optional Clerk Supabase template env vars instead.
+4. Start the frontend and confirm Clerk renders sign-in controls.
+5. Start the worker and verify `ingestion_runs` receives a successful row.
+6. Add a symbol to a user watchlist and confirm `quotes_current` updates.
 
 ## Deployment order
 

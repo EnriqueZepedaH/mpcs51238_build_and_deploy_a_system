@@ -12,7 +12,7 @@ import {
 } from "@market-pulse/shared";
 
 import { formatCompactNumber, formatCurrency, formatPercent, formatRelativeSeconds } from "@/lib/format";
-import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
+import { useSupabaseBrowserClient } from "@/lib/supabase-browser";
 
 type DashboardClientProps = {
   initialWatchlist: WatchlistItem[];
@@ -41,11 +41,11 @@ export function DashboardClient({
   const [latestRun, setLatestRun] = useState(initialRun);
   const [symbolInput, setSymbolInput] = useState("");
   const [mutation, setMutation] = useState<MutationState>({ pending: false, error: null });
+  const supabase = useSupabaseBrowserClient();
 
   const symbols = useMemo(() => watchlist.map((item) => item.symbol), [watchlist]);
 
   useEffect(() => {
-    const supabase = getSupabaseBrowserClient();
     const quoteChannel = supabase
       .channel("quotes_current_feed")
       .on(
@@ -80,7 +80,7 @@ export function DashboardClient({
       void supabase.removeChannel(quoteChannel);
       void supabase.removeChannel(runChannel);
     };
-  }, [symbols]);
+  }, [supabase, symbols]);
 
   async function addSymbol(formData: FormData) {
     const symbol = String(formData.get("symbol") ?? "").trim().toUpperCase();

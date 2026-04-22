@@ -5,7 +5,7 @@ import type { IngestionRunRecord, QuoteRecord, WatchlistItem } from "@market-pul
 
 import { DashboardClient } from "@/components/dashboard-client";
 import { getFreshnessTargetSeconds, getMaxWatchlistSize } from "@/lib/env";
-import { getSupabaseAdminClient } from "@/lib/supabase-server";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 
@@ -16,11 +16,10 @@ export default async function DashboardPage() {
     redirect("/");
   }
 
-  const supabase = getSupabaseAdminClient();
+  const supabase = await getSupabaseServerClient();
   const { data: watchlist } = await supabase
     .from("user_watchlists")
     .select("*")
-    .eq("clerk_user_id", userId)
     .order("symbol");
 
   const symbols = (watchlist ?? []).map((item: { symbol: string }) => item.symbol);

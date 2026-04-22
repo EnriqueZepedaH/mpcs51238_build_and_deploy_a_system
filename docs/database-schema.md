@@ -107,8 +107,7 @@ Why it exists:
 ## Security model
 
 - `user_watchlists` is user-scoped with RLS based on Clerk identity propagated into Supabase JWT claims
-- `quotes_current`, `quotes_history`, and `ingestion_runs` are currently readable with the publishable key
+- `quotes_current`, `quotes_history`, and `ingestion_runs` are readable only to authenticated clients with valid Supabase-compatible Clerk tokens
 - writes to quote and ops tables are intended to come from the worker using the service-role key
 
-This is not the final security posture. The current model favors getting the pipeline working end to end. A later hardening pass should reduce public read exposure and align browser access with authenticated user claims.
-
+This is a stronger security posture than the initial scaffold because the web app no longer uses the service-role key for normal user access. The remaining hard dependency is Clerk-to-Supabase token compatibility, which must be configured either through Supabase Third-Party Auth with Clerk or the older JWT template fallback.

@@ -15,13 +15,6 @@ export function getPublicSupabaseEnv() {
   };
 }
 
-export function getSupabaseServiceEnv() {
-  return {
-    url: getRequiredEnv("NEXT_PUBLIC_SUPABASE_URL"),
-    serviceRoleKey: getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY")
-  };
-}
-
 export function getFreshnessTargetSeconds(): number {
   return Number(process.env.FRESHNESS_TARGET_SECONDS ?? "120");
 }

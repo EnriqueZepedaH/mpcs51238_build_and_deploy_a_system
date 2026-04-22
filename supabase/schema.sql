@@ -75,36 +75,45 @@ drop policy if exists "watchlist_select_own" on public.user_watchlists;
 create policy "watchlist_select_own"
 on public.user_watchlists
 for select
+to authenticated
 using ((((select auth.jwt()) ->> 'sub')) = clerk_user_id);
 
 drop policy if exists "watchlist_insert_own" on public.user_watchlists;
 create policy "watchlist_insert_own"
 on public.user_watchlists
 for insert
+to authenticated
 with check ((((select auth.jwt()) ->> 'sub')) = clerk_user_id);
 
 drop policy if exists "watchlist_delete_own" on public.user_watchlists;
 create policy "watchlist_delete_own"
 on public.user_watchlists
 for delete
+to authenticated
 using ((((select auth.jwt()) ->> 'sub')) = clerk_user_id);
 
 drop policy if exists "quotes_public_read" on public.quotes_current;
-create policy "quotes_public_read"
+drop policy if exists "quotes_authenticated_read" on public.quotes_current;
+create policy "quotes_authenticated_read"
 on public.quotes_current
 for select
+to authenticated
 using (true);
 
 drop policy if exists "history_public_read" on public.quotes_history;
-create policy "history_public_read"
+drop policy if exists "history_authenticated_read" on public.quotes_history;
+create policy "history_authenticated_read"
 on public.quotes_history
 for select
+to authenticated
 using (true);
 
 drop policy if exists "runs_public_read" on public.ingestion_runs;
-create policy "runs_public_read"
+drop policy if exists "runs_authenticated_read" on public.ingestion_runs;
+create policy "runs_authenticated_read"
 on public.ingestion_runs
 for select
+to authenticated
 using (true);
 
 do $$
