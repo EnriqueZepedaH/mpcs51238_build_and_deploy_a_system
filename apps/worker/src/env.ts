@@ -5,9 +5,9 @@ const workerEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   TWELVE_DATA_API_KEY: z.string().min(1),
   TWELVE_DATA_BASE_URL: z.string().url().default("https://api.twelvedata.com"),
-  POLL_INTERVAL_MS: z.coerce.number().int().positive().default(60_000),
+  POLL_INTERVAL_MS: z.coerce.number().int().positive().default(900_000),
   MAX_SYMBOLS_PER_RUN: z.coerce.number().int().positive().default(8),
-  FRESHNESS_TARGET_SECONDS: z.coerce.number().int().positive().default(120)
+  FRESHNESS_TARGET_SECONDS: z.coerce.number().int().positive().default(1800)
 });
 
 export type WorkerEnv = z.infer<typeof workerEnvSchema>;

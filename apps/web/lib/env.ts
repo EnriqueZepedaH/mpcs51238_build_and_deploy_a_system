@@ -23,7 +23,7 @@ export function getPublicSupabaseEnv() {
 }
 
 export function getFreshnessTargetSeconds(): number {
-  return Number(process.env.FRESHNESS_TARGET_SECONDS ?? "120");
+  return Number(process.env.FRESHNESS_TARGET_SECONDS ?? "1800");
 }
 
 export function getMaxWatchlistSize(): number {

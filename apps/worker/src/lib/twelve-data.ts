@@ -42,21 +42,47 @@ export class TwelveDataClient {
     if (payload && typeof payload === "object") {
       const maybeRecord = payload as Record<string, unknown>;
 
+      if (isErrorEnvelope(maybeRecord)) {
+        throw new Error(describeTwelveDataError(maybeRecord));
+      }
+
       if ("symbol" in maybeRecord) {
         return [maybeRecord];
       }
 
-      return Object.values(maybeRecord).filter(
-        (value): value is Record<string, unknown> => {
-          if (!value || typeof value !== "object") {
-            return false;
-          }
-
-          return "symbol" in value;
+      const entries = Object.entries(maybeRecord).filter(
+        (entry): entry is [string, Record<string, unknown>] => {
+          const [, value] = entry;
+          return Boolean(value) && typeof value === "object";
         }
       );
+
+      const perSymbolErrors = entries.filter(([, value]) => isErrorEnvelope(value));
+      const quoteEntries = entries.filter(
+        ([, value]) => !isErrorEnvelope(value) && "symbol" in value
+      );
+
+      const firstError = perSymbolErrors[0];
+      if (quoteEntries.length === 0 && firstError) {
+        const [firstSymbol, firstErrorEnvelope] = firstError;
+        throw new Error(
+          `${describeTwelveDataError(firstErrorEnvelope)} (symbol=${firstSymbol}, total_failed=${perSymbolErrors.length})`
+        );
+      }
+
+      return quoteEntries.map(([, value]) => value);
     }
 
     return [];
   }
+}
+
+function isErrorEnvelope(value: Record<string, unknown>): boolean {
+  return value.status === "error" || typeof value.code === "number";
+}
+
+function describeTwelveDataError(value: Record<string, unknown>): string {
+  const code = typeof value.code === "number" ? value.code : "unknown";
+  const message = typeof value.message === "string" ? value.message : "Twelve Data error";
+  return `Twelve Data error (code=${code}): ${message}`;
 }
