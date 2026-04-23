@@ -42,9 +42,20 @@ export function DashboardClient({
   const [latestRun, setLatestRun] = useState(initialRun);
   const [symbolInput, setSymbolInput] = useState("");
   const [mutation, setMutation] = useState<MutationState>({ pending: false, error: null });
+  const [clockMs, setClockMs] = useState(() => Date.now());
   const supabase = useSupabaseBrowserClient();
 
   const symbols = useMemo(() => watchlist.map((item) => item.symbol), [watchlist]);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setClockMs(Date.now());
+    }, 15_000);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     const quoteChannel = supabase
@@ -218,10 +229,11 @@ export function DashboardClient({
               ) : (
                 watchlist.map((item) => {
                   const quote = quotes[item.symbol];
-                  const ageSeconds = getQuoteAgeSeconds(quote?.last_ingested_at);
+                  const ageSeconds = getQuoteAgeSeconds(quote?.last_ingested_at, clockMs);
                   const freshness = getFreshnessStatus(
                     quote?.last_ingested_at,
-                    freshnessTargetSeconds
+                    freshnessTargetSeconds,
+                    clockMs
                   );
 
                   return (
