@@ -41,3 +41,14 @@ export function formatRelativeSeconds(seconds: number | null): string {
   return `${Math.floor(seconds / 60)}m ago`;
 }
 
+export function formatDateLabel(value: string | null | undefined): string {
+  if (!value) {
+    return "--";
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(new Date(`${value}T00:00:00Z`));
+}

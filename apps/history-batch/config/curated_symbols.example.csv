@@ -1,0 +1,4 @@
+symbol,name,exchange,instrument_type,country,is_active,curated_rank
+AAPL,Apple Inc.,NASDAQ,Common Stock,United States,true,1
+MSFT,Microsoft Corporation,NASDAQ,Common Stock,United States,true,2
+SPY,SPDR S&P 500 ETF Trust,NYSE Arca,ETF,United States,true,3

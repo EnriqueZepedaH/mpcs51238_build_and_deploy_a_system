@@ -13,6 +13,7 @@ import {
 
 import { formatCompactNumber, formatCurrency, formatPercent, formatRelativeSeconds } from "@/lib/format";
 import { useSupabaseBrowserClient } from "@/lib/supabase-browser";
+import { HistoricalPerformancePanel } from "@/components/historical-performance-panel";
 
 type DashboardClientProps = {
   initialWatchlist: WatchlistItem[];
@@ -324,6 +325,8 @@ export function DashboardClient({
           </section>
         </aside>
       </section>
+
+      <HistoricalPerformancePanel symbols={symbols} />
     </div>
   );
 }

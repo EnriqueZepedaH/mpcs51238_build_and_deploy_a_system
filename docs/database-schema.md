@@ -4,6 +4,7 @@ This project uses a layered schema so the pipeline is easy to reason about and o
 
 - personalization data is isolated from market data
 - current serving state is separated from historical storage
+- long-range chart history is separated from live operational snapshots
 - operational metadata is stored explicitly instead of hidden in logs
 
 ## Tables
@@ -61,7 +62,7 @@ Rules:
 
 Why it exists:
 - this is the historical analytics layer
-- it supports charts, trend analysis, and auditability
+- it supports recent trend analysis, replay/debugging, and auditability for the live quote worker
 - it is currently Realtime-enabled because the worker writes to it, though this may be revisited if event volume becomes unnecessary
 
 ### `public.ingestion_runs`
@@ -83,6 +84,58 @@ Why it exists:
 - the frontend can surface pipeline health without reading logs
 - it is part of the Supabase Realtime publication
 
+### `public.symbol_master`
+
+Purpose: stores the curated symbol dimension used by the historical charting pipeline.
+
+Key columns:
+- `id`: stable surrogate key used by long-range history rows
+- `symbol`: unique ticker symbol
+- `name`, `exchange`, `instrument_type`, `country`: descriptive metadata
+- `is_active`: whether the symbol should still be considered active in the curated universe
+- `is_curated`, `curated_rank`: whether the symbol belongs to the maintained universe and its ranking within that list
+- `last_refreshed_at`: when the symbol metadata was last reconciled
+- `source`, `source_status`, `raw_payload`: provenance and raw metadata from the batch pipeline
+
+Why it exists:
+- this is the reference-data dimension for long-horizon history
+- it avoids duplicating symbol text on every daily history row
+- it lets the app keep a stable `symbol_id` even if metadata changes later
+
+### `public.daily_price_history`
+
+Purpose: stores the lean daily adjusted-close history used for long-range performance charts.
+
+Key columns:
+- `symbol_id`: foreign key to `symbol_master.id`
+- `trading_date`: daily grain for the chart dataset
+- `adjusted_close`: adjusted closing price used as the chart baseline
+- `volume`: daily volume when available
+
+Rules:
+- unique on `(symbol_id, trading_date)` to make imports and monthly refreshes idempotent
+
+Why it exists:
+- this is the chart-serving history table
+- it is intentionally separate from `quotes_history`
+- it keeps storage lean enough for multi-year daily history
+
+### `public.historical_job_runs`
+
+Purpose: records the outcomes of symbol-master refreshes, CSV imports, and monthly history reconciliation jobs.
+
+Key columns:
+- `job_type`: batch job name such as `symbol_master_sync` or `history_csv_import`
+- `started_at`, `completed_at`: execution window
+- `status`: `running`, `success`, `partial`, or `error`
+- `symbols_considered`: how many symbols the batch job touched
+- `rows_inserted`, `rows_updated`, `rows_deleted`: data-change counts
+- `error_count`, `error_details`: diagnostics for partial or failed runs
+
+Why it exists:
+- this is the observability layer for the batch history pipeline
+- it makes the monthly reconciliation job auditable without reading service logs
+
 ## Derived objects
 
 ### `public.symbol_watchlist_rollup`
@@ -101,13 +154,16 @@ Why it exists:
 4. The worker fetches quotes from Twelve Data.
 5. Latest state is upserted into `quotes_current`.
 6. Snapshots are appended into `quotes_history`.
-7. Operational results are written into `ingestion_runs`.
-8. Supabase Realtime pushes `quotes_current` and `ingestion_runs` updates to the dashboard.
+7. In parallel, the batch service maintains `symbol_master` and `daily_price_history`.
+8. Operational results are written into `ingestion_runs` and `historical_job_runs`.
+9. Supabase Realtime pushes `quotes_current` and `ingestion_runs` updates to the dashboard.
 
 ## Security model
 
 - `user_watchlists` is user-scoped with RLS based on Clerk identity propagated into Supabase JWT claims
 - `quotes_current`, `quotes_history`, and `ingestion_runs` are readable only to authenticated clients with valid Supabase-compatible Clerk tokens
+- `symbol_master` and `daily_price_history` are readable only for symbols already present in the caller's watchlist
+- `historical_job_runs` is readable to authenticated users so the product can expose batch-pipeline health later if needed
 - writes to quote and ops tables are intended to come from the worker using the service-role key
 
 This is a stronger security posture than the initial scaffold because the web app no longer uses the service-role key for normal user access. The remaining hard dependency is Clerk-to-Supabase token compatibility, which must be configured either through Supabase Third-Party Auth with Clerk or the older JWT template fallback.

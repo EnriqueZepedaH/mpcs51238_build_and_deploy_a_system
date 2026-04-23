@@ -1,0 +1,554 @@
+symbol,name,exchange,instrument_type,country,is_active,curated_rank
+MMM,3M,,Common Stock,United States,true,1
+AOS,A. O. Smith,,Common Stock,United States,true,2
+ABT,Abbott Laboratories,,Common Stock,United States,true,3
+ABBV,AbbVie,,Common Stock,United States,true,4
+ACN,Accenture,,Common Stock,United States,true,5
+ADBE,Adobe Inc.,,Common Stock,United States,true,6
+AMD,Advanced Micro Devices,,Common Stock,United States,true,7
+AES,AES Corporation,,Common Stock,United States,true,8
+AFL,Aflac,,Common Stock,United States,true,9
+A,Agilent Technologies,,Common Stock,United States,true,10
+APD,Air Products,,Common Stock,United States,true,11
+ABNB,Airbnb,,Common Stock,United States,true,12
+AKAM,Akamai Technologies,,Common Stock,United States,true,13
+ALB,Albemarle Corporation,,Common Stock,United States,true,14
+ARE,Alexandria Real Estate Equities,,Common Stock,United States,true,15
+ALGN,Align Technology,,Common Stock,United States,true,16
+ALLE,Allegion,,Common Stock,United States,true,17
+LNT,Alliant Energy,,Common Stock,United States,true,18
+ALL,Allstate,,Common Stock,United States,true,19
+GOOGL,Alphabet Inc. (Class A),,Common Stock,United States,true,20
+GOOG,Alphabet Inc. (Class C),,Common Stock,United States,true,21
+MO,Altria,,Common Stock,United States,true,22
+AMZN,Amazon,,Common Stock,United States,true,23
+AMCR,Amcor,,Common Stock,United States,true,24
+AEE,Ameren,,Common Stock,United States,true,25
+AEP,American Electric Power,,Common Stock,United States,true,26
+AXP,American Express,,Common Stock,United States,true,27
+AIG,American International Group,,Common Stock,United States,true,28
+AMT,American Tower,,Common Stock,United States,true,29
+AWK,American Water Works,,Common Stock,United States,true,30
+AMP,Ameriprise Financial,,Common Stock,United States,true,31
+AME,Ametek,,Common Stock,United States,true,32
+AMGN,Amgen,,Common Stock,United States,true,33
+APH,Amphenol,,Common Stock,United States,true,34
+ADI,Analog Devices,,Common Stock,United States,true,35
+AON,Aon plc,,Common Stock,United States,true,36
+APA,APA Corporation,,Common Stock,United States,true,37
+APO,Apollo Global Management,,Common Stock,United States,true,38
+AAPL,Apple Inc.,,Common Stock,United States,true,39
+AMAT,Applied Materials,,Common Stock,United States,true,40
+APP,AppLovin,,Common Stock,United States,true,41
+APTV,Aptiv,,Common Stock,United States,true,42
+ACGL,Arch Capital Group,,Common Stock,United States,true,43
+ADM,Archer Daniels Midland,,Common Stock,United States,true,44
+ARES,Ares Management,,Common Stock,United States,true,45
+ANET,Arista Networks,,Common Stock,United States,true,46
+AJG,Arthur J. Gallagher & Co.,,Common Stock,United States,true,47
+AIZ,Assurant,,Common Stock,United States,true,48
+T,AT&T,,Common Stock,United States,true,49
+ATO,Atmos Energy,,Common Stock,United States,true,50
+ADSK,Autodesk,,Common Stock,United States,true,51
+ADP,Automatic Data Processing,,Common Stock,United States,true,52
+AZO,AutoZone,,Common Stock,United States,true,53
+AVB,AvalonBay Communities,,Common Stock,United States,true,54
+AVY,Avery Dennison,,Common Stock,United States,true,55
+AXON,Axon Enterprise,,Common Stock,United States,true,56
+BKR,Baker Hughes,,Common Stock,United States,true,57
+BALL,Ball Corporation,,Common Stock,United States,true,58
+BAC,Bank of America,,Common Stock,United States,true,59
+BAX,Baxter International,,Common Stock,United States,true,60
+BDX,Becton Dickinson,,Common Stock,United States,true,61
+BRK.B,Berkshire Hathaway,,Common Stock,United States,true,62
+BBY,Best Buy,,Common Stock,United States,true,63
+TECH,Bio-Techne,,Common Stock,United States,true,64
+BIIB,Biogen,,Common Stock,United States,true,65
+BLK,BlackRock,,Common Stock,United States,true,66
+BX,Blackstone Inc.,,Common Stock,United States,true,67
+XYZ,"Block, Inc.",,Common Stock,United States,true,68
+BK,BNY Mellon,,Common Stock,United States,true,69
+BA,Boeing,,Common Stock,United States,true,70
+BKNG,Booking Holdings,,Common Stock,United States,true,71
+BSX,Boston Scientific,,Common Stock,United States,true,72
+BMY,Bristol Myers Squibb,,Common Stock,United States,true,73
+AVGO,Broadcom,,Common Stock,United States,true,74
+BR,Broadridge Financial Solutions,,Common Stock,United States,true,75
+BRO,Brown & Brown,,Common Stock,United States,true,76
+BF.B,Brown–Forman,,Common Stock,United States,true,77
+BLDR,Builders FirstSource,,Common Stock,United States,true,78
+BG,Bunge Global,,Common Stock,United States,true,79
+BXP,"BXP, Inc.",,Common Stock,United States,true,80
+CHRW,C.H. Robinson,,Common Stock,United States,true,81
+CDNS,Cadence Design Systems,,Common Stock,United States,true,82
+CPT,Camden Property Trust,,Common Stock,United States,true,83
+CPB,Campbell's Company (The),,Common Stock,United States,true,84
+COF,Capital One,,Common Stock,United States,true,85
+CAH,Cardinal Health,,Common Stock,United States,true,86
+CCL,Carnival,,Common Stock,United States,true,87
+CARR,Carrier Global,,Common Stock,United States,true,88
+CVNA,Carvana,,Common Stock,United States,true,89
+CASY,Casey's,,Common Stock,United States,true,90
+CAT,Caterpillar Inc.,,Common Stock,United States,true,91
+CBOE,Cboe Global Markets,,Common Stock,United States,true,92
+CBRE,CBRE Group,,Common Stock,United States,true,93
+CDW,CDW Corporation,,Common Stock,United States,true,94
+COR,Cencora,,Common Stock,United States,true,95
+CNC,Centene Corporation,,Common Stock,United States,true,96
+CNP,CenterPoint Energy,,Common Stock,United States,true,97
+CF,CF Industries,,Common Stock,United States,true,98
+CRL,Charles River Laboratories,,Common Stock,United States,true,99
+SCHW,Charles Schwab Corporation,,Common Stock,United States,true,100
+CHTR,Charter Communications,,Common Stock,United States,true,101
+CVX,Chevron Corporation,,Common Stock,United States,true,102
+CMG,Chipotle Mexican Grill,,Common Stock,United States,true,103
+CB,Chubb Limited,,Common Stock,United States,true,104
+CHD,Church & Dwight,,Common Stock,United States,true,105
+CIEN,Ciena,,Common Stock,United States,true,106
+CI,Cigna,,Common Stock,United States,true,107
+CINF,Cincinnati Financial,,Common Stock,United States,true,108
+CTAS,Cintas,,Common Stock,United States,true,109
+CSCO,Cisco,,Common Stock,United States,true,110
+C,Citigroup,,Common Stock,United States,true,111
+CFG,Citizens Financial Group,,Common Stock,United States,true,112
+CLX,Clorox,,Common Stock,United States,true,113
+CME,CME Group,,Common Stock,United States,true,114
+CMS,CMS Energy,,Common Stock,United States,true,115
+KO,Coca-Cola Company (The),,Common Stock,United States,true,116
+CTSH,Cognizant,,Common Stock,United States,true,117
+COHR,Coherent Corp.,,Common Stock,United States,true,118
+COIN,Coinbase,,Common Stock,United States,true,119
+CL,Colgate-Palmolive,,Common Stock,United States,true,120
+CMCSA,Comcast,,Common Stock,United States,true,121
+FIX,Comfort Systems USA,,Common Stock,United States,true,122
+CAG,Conagra Brands,,Common Stock,United States,true,123
+COP,ConocoPhillips,,Common Stock,United States,true,124
+ED,Consolidated Edison,,Common Stock,United States,true,125
+STZ,Constellation Brands,,Common Stock,United States,true,126
+CEG,Constellation Energy,,Common Stock,United States,true,127
+COO,Cooper Companies (The),,Common Stock,United States,true,128
+CPRT,Copart,,Common Stock,United States,true,129
+GLW,Corning Inc.,,Common Stock,United States,true,130
+CPAY,Corpay,,Common Stock,United States,true,131
+CTVA,Corteva,,Common Stock,United States,true,132
+CSGP,CoStar Group,,Common Stock,United States,true,133
+COST,Costco,,Common Stock,United States,true,134
+CTRA,Coterra,,Common Stock,United States,true,135
+CRH,CRH plc,,Common Stock,United States,true,136
+CRWD,CrowdStrike,,Common Stock,United States,true,137
+CCI,Crown Castle,,Common Stock,United States,true,138
+CSX,CSX Corporation,,Common Stock,United States,true,139
+CMI,Cummins,,Common Stock,United States,true,140
+CVS,CVS Health,,Common Stock,United States,true,141
+DHR,Danaher Corporation,,Common Stock,United States,true,142
+DRI,Darden Restaurants,,Common Stock,United States,true,143
+DDOG,Datadog,,Common Stock,United States,true,144
+DVA,DaVita,,Common Stock,United States,true,145
+DECK,Deckers Brands,,Common Stock,United States,true,146
+DE,Deere & Company,,Common Stock,United States,true,147
+DELL,Dell Technologies,,Common Stock,United States,true,148
+DAL,Delta Air Lines,,Common Stock,United States,true,149
+DVN,Devon Energy,,Common Stock,United States,true,150
+DXCM,Dexcom,,Common Stock,United States,true,151
+FANG,Diamondback Energy,,Common Stock,United States,true,152
+DLR,Digital Realty,,Common Stock,United States,true,153
+DG,Dollar General,,Common Stock,United States,true,154
+DLTR,Dollar Tree,,Common Stock,United States,true,155
+D,Dominion Energy,,Common Stock,United States,true,156
+DPZ,Domino's,,Common Stock,United States,true,157
+DASH,DoorDash,,Common Stock,United States,true,158
+DOV,Dover Corporation,,Common Stock,United States,true,159
+DOW,Dow Inc.,,Common Stock,United States,true,160
+DHI,D. R. Horton,,Common Stock,United States,true,161
+DTE,DTE Energy,,Common Stock,United States,true,162
+DUK,Duke Energy,,Common Stock,United States,true,163
+DD,DuPont,,Common Stock,United States,true,164
+ETN,Eaton Corporation,,Common Stock,United States,true,165
+EBAY,eBay Inc.,,Common Stock,United States,true,166
+SATS,EchoStar,,Common Stock,United States,true,167
+ECL,Ecolab,,Common Stock,United States,true,168
+EIX,Edison International,,Common Stock,United States,true,169
+EW,Edwards Lifesciences,,Common Stock,United States,true,170
+EA,Electronic Arts,,Common Stock,United States,true,171
+ELV,Elevance Health,,Common Stock,United States,true,172
+EME,Emcor,,Common Stock,United States,true,173
+EMR,Emerson Electric,,Common Stock,United States,true,174
+ETR,Entergy,,Common Stock,United States,true,175
+EOG,EOG Resources,,Common Stock,United States,true,176
+EPAM,EPAM Systems,,Common Stock,United States,true,177
+EQT,EQT Corporation,,Common Stock,United States,true,178
+EFX,Equifax,,Common Stock,United States,true,179
+EQIX,Equinix,,Common Stock,United States,true,180
+EQR,Equity Residential,,Common Stock,United States,true,181
+ERIE,Erie Indemnity,,Common Stock,United States,true,182
+ESS,Essex Property Trust,,Common Stock,United States,true,183
+EL,Estée Lauder Companies (The),,Common Stock,United States,true,184
+EG,Everest Group,,Common Stock,United States,true,185
+EVRG,Evergy,,Common Stock,United States,true,186
+ES,Eversource Energy,,Common Stock,United States,true,187
+EXC,Exelon,,Common Stock,United States,true,188
+EXE,Expand Energy,,Common Stock,United States,true,189
+EXPE,Expedia Group,,Common Stock,United States,true,190
+EXPD,Expeditors International,,Common Stock,United States,true,191
+EXR,Extra Space Storage,,Common Stock,United States,true,192
+XOM,ExxonMobil,,Common Stock,United States,true,193
+FFIV,"F5, Inc.",,Common Stock,United States,true,194
+FDS,FactSet,,Common Stock,United States,true,195
+FICO,Fair Isaac,,Common Stock,United States,true,196
+FAST,Fastenal,,Common Stock,United States,true,197
+FRT,Federal Realty Investment Trust,,Common Stock,United States,true,198
+FDX,FedEx,,Common Stock,United States,true,199
+FIS,Fidelity National Information Services,,Common Stock,United States,true,200
+FITB,Fifth Third Bancorp,,Common Stock,United States,true,201
+FSLR,First Solar,,Common Stock,United States,true,202
+FE,FirstEnergy,,Common Stock,United States,true,203
+FISV,Fiserv,,Common Stock,United States,true,204
+F,Ford Motor Company,,Common Stock,United States,true,205
+FTNT,Fortinet,,Common Stock,United States,true,206
+FTV,Fortive,,Common Stock,United States,true,207
+FOXA,Fox Corporation (Class A),,Common Stock,United States,true,208
+FOX,Fox Corporation (Class B),,Common Stock,United States,true,209
+BEN,Franklin Resources,,Common Stock,United States,true,210
+FCX,Freeport-McMoRan,,Common Stock,United States,true,211
+GRMN,Garmin,,Common Stock,United States,true,212
+IT,Gartner,,Common Stock,United States,true,213
+GE,GE Aerospace,,Common Stock,United States,true,214
+GEHC,GE HealthCare,,Common Stock,United States,true,215
+GEV,GE Vernova,,Common Stock,United States,true,216
+GEN,Gen Digital,,Common Stock,United States,true,217
+GNRC,Generac,,Common Stock,United States,true,218
+GD,General Dynamics,,Common Stock,United States,true,219
+GIS,General Mills,,Common Stock,United States,true,220
+GM,General Motors,,Common Stock,United States,true,221
+GPC,Genuine Parts Company,,Common Stock,United States,true,222
+GILD,Gilead Sciences,,Common Stock,United States,true,223
+GPN,Global Payments,,Common Stock,United States,true,224
+GL,Globe Life,,Common Stock,United States,true,225
+GDDY,GoDaddy,,Common Stock,United States,true,226
+GS,Goldman Sachs,,Common Stock,United States,true,227
+HAL,Halliburton,,Common Stock,United States,true,228
+HIG,Hartford (The),,Common Stock,United States,true,229
+HAS,Hasbro,,Common Stock,United States,true,230
+HCA,HCA Healthcare,,Common Stock,United States,true,231
+DOC,Healthpeak Properties,,Common Stock,United States,true,232
+HSIC,Henry Schein,,Common Stock,United States,true,233
+HSY,Hershey Company (The),,Common Stock,United States,true,234
+HPE,Hewlett Packard Enterprise,,Common Stock,United States,true,235
+HLT,Hilton Worldwide,,Common Stock,United States,true,236
+HD,Home Depot (The),,Common Stock,United States,true,237
+HON,Honeywell,,Common Stock,United States,true,238
+HRL,Hormel Foods,,Common Stock,United States,true,239
+HST,Host Hotels & Resorts,,Common Stock,United States,true,240
+HWM,Howmet Aerospace,,Common Stock,United States,true,241
+HPQ,HP Inc.,,Common Stock,United States,true,242
+HUBB,Hubbell Incorporated,,Common Stock,United States,true,243
+HUM,Humana,,Common Stock,United States,true,244
+HBAN,Huntington Bancshares,,Common Stock,United States,true,245
+HII,Huntington Ingalls Industries,,Common Stock,United States,true,246
+IBM,IBM,,Common Stock,United States,true,247
+IEX,IDEX Corporation,,Common Stock,United States,true,248
+IDXX,Idexx Laboratories,,Common Stock,United States,true,249
+ITW,Illinois Tool Works,,Common Stock,United States,true,250
+INCY,Incyte,,Common Stock,United States,true,251
+IR,Ingersoll Rand,,Common Stock,United States,true,252
+PODD,Insulet Corporation,,Common Stock,United States,true,253
+INTC,Intel,,Common Stock,United States,true,254
+IBKR,Interactive Brokers,,Common Stock,United States,true,255
+ICE,Intercontinental Exchange,,Common Stock,United States,true,256
+IFF,International Flavors & Fragrances,,Common Stock,United States,true,257
+IP,International Paper,,Common Stock,United States,true,258
+INTU,Intuit,,Common Stock,United States,true,259
+ISRG,Intuitive Surgical,,Common Stock,United States,true,260
+IVZ,Invesco,,Common Stock,United States,true,261
+INVH,Invitation Homes,,Common Stock,United States,true,262
+IQV,IQVIA,,Common Stock,United States,true,263
+IRM,Iron Mountain,,Common Stock,United States,true,264
+JBHT,J.B. Hunt,,Common Stock,United States,true,265
+JBL,Jabil,,Common Stock,United States,true,266
+JKHY,Jack Henry & Associates,,Common Stock,United States,true,267
+J,Jacobs Solutions,,Common Stock,United States,true,268
+JNJ,Johnson & Johnson,,Common Stock,United States,true,269
+JCI,Johnson Controls,,Common Stock,United States,true,270
+JPM,JPMorgan Chase,,Common Stock,United States,true,271
+KVUE,Kenvue,,Common Stock,United States,true,272
+KDP,Keurig Dr Pepper,,Common Stock,United States,true,273
+KEY,KeyCorp,,Common Stock,United States,true,274
+KEYS,Keysight Technologies,,Common Stock,United States,true,275
+KMB,Kimberly-Clark,,Common Stock,United States,true,276
+KIM,Kimco Realty,,Common Stock,United States,true,277
+KMI,Kinder Morgan,,Common Stock,United States,true,278
+KKR,KKR & Co.,,Common Stock,United States,true,279
+KLAC,KLA Corporation,,Common Stock,United States,true,280
+KHC,Kraft Heinz,,Common Stock,United States,true,281
+KR,Kroger,,Common Stock,United States,true,282
+LHX,L3Harris,,Common Stock,United States,true,283
+LH,Labcorp,,Common Stock,United States,true,284
+LRCX,Lam Research,,Common Stock,United States,true,285
+LVS,Las Vegas Sands,,Common Stock,United States,true,286
+LDOS,Leidos,,Common Stock,United States,true,287
+LEN,Lennar,,Common Stock,United States,true,288
+LII,Lennox International,,Common Stock,United States,true,289
+LLY,Lilly (Eli),,Common Stock,United States,true,290
+LIN,Linde plc,,Common Stock,United States,true,291
+LYV,Live Nation Entertainment,,Common Stock,United States,true,292
+LMT,Lockheed Martin,,Common Stock,United States,true,293
+L,Loews Corporation,,Common Stock,United States,true,294
+LOW,Lowe's,,Common Stock,United States,true,295
+LULU,Lululemon Athletica,,Common Stock,United States,true,296
+LITE,Lumentum,,Common Stock,United States,true,297
+LYB,LyondellBasell,,Common Stock,United States,true,298
+MTB,M&T Bank,,Common Stock,United States,true,299
+MPC,Marathon Petroleum,,Common Stock,United States,true,300
+MAR,Marriott International,,Common Stock,United States,true,301
+MRSH,Marsh McLennan,,Common Stock,United States,true,302
+MLM,Martin Marietta Materials,,Common Stock,United States,true,303
+MAS,Masco,,Common Stock,United States,true,304
+MA,Mastercard,,Common Stock,United States,true,305
+MKC,McCormick & Company,,Common Stock,United States,true,306
+MCD,McDonald's,,Common Stock,United States,true,307
+MCK,McKesson Corporation,,Common Stock,United States,true,308
+MDT,Medtronic,,Common Stock,United States,true,309
+MRK,Merck & Co.,,Common Stock,United States,true,310
+META,Meta Platforms,,Common Stock,United States,true,311
+MET,MetLife,,Common Stock,United States,true,312
+MTD,Mettler Toledo,,Common Stock,United States,true,313
+MGM,MGM Resorts,,Common Stock,United States,true,314
+MCHP,Microchip Technology,,Common Stock,United States,true,315
+MU,Micron Technology,,Common Stock,United States,true,316
+MSFT,Microsoft,,Common Stock,United States,true,317
+MAA,Mid-America Apartment Communities,,Common Stock,United States,true,318
+MRNA,Moderna,,Common Stock,United States,true,319
+TAP,Molson Coors Beverage Company,,Common Stock,United States,true,320
+MDLZ,Mondelez International,,Common Stock,United States,true,321
+MPWR,Monolithic Power Systems,,Common Stock,United States,true,322
+MNST,Monster Beverage,,Common Stock,United States,true,323
+MCO,Moody's Corporation,,Common Stock,United States,true,324
+MS,Morgan Stanley,,Common Stock,United States,true,325
+MOS,Mosaic Company (The),,Common Stock,United States,true,326
+MSI,Motorola Solutions,,Common Stock,United States,true,327
+MSCI,MSCI Inc.,,Common Stock,United States,true,328
+NDAQ,"Nasdaq, Inc.",,Common Stock,United States,true,329
+NTAP,NetApp,,Common Stock,United States,true,330
+NFLX,Netflix,,Common Stock,United States,true,331
+NEM,Newmont,,Common Stock,United States,true,332
+NWSA,News Corp (Class A),,Common Stock,United States,true,333
+NWS,News Corp (Class B),,Common Stock,United States,true,334
+NEE,NextEra Energy,,Common Stock,United States,true,335
+NKE,"Nike, Inc.",,Common Stock,United States,true,336
+NI,NiSource,,Common Stock,United States,true,337
+NDSN,Nordson Corporation,,Common Stock,United States,true,338
+NSC,Norfolk Southern,,Common Stock,United States,true,339
+NTRS,Northern Trust,,Common Stock,United States,true,340
+NOC,Northrop Grumman,,Common Stock,United States,true,341
+NCLH,Norwegian Cruise Line Holdings,,Common Stock,United States,true,342
+NRG,NRG Energy,,Common Stock,United States,true,343
+NUE,Nucor,,Common Stock,United States,true,344
+NVDA,Nvidia,,Common Stock,United States,true,345
+NVR,"NVR, Inc.",,Common Stock,United States,true,346
+NXPI,NXP Semiconductors,,Common Stock,United States,true,347
+ORLY,O’Reilly Automotive,,Common Stock,United States,true,348
+OXY,Occidental Petroleum,,Common Stock,United States,true,349
+ODFL,Old Dominion,,Common Stock,United States,true,350
+OMC,Omnicom Group,,Common Stock,United States,true,351
+ON,ON Semiconductor,,Common Stock,United States,true,352
+OKE,Oneok,,Common Stock,United States,true,353
+ORCL,Oracle Corporation,,Common Stock,United States,true,354
+OTIS,Otis Worldwide,,Common Stock,United States,true,355
+PCAR,Paccar,,Common Stock,United States,true,356
+PKG,Packaging Corporation of America,,Common Stock,United States,true,357
+PLTR,Palantir Technologies,,Common Stock,United States,true,358
+PANW,Palo Alto Networks,,Common Stock,United States,true,359
+PSKY,Paramount Skydance Corporation,,Common Stock,United States,true,360
+PH,Parker Hannifin,,Common Stock,United States,true,361
+PAYX,Paychex,,Common Stock,United States,true,362
+PYPL,PayPal,,Common Stock,United States,true,363
+PNR,Pentair,,Common Stock,United States,true,364
+PEP,PepsiCo,,Common Stock,United States,true,365
+PFE,Pfizer,,Common Stock,United States,true,366
+PCG,PG&E Corporation,,Common Stock,United States,true,367
+PM,Philip Morris International,,Common Stock,United States,true,368
+PSX,Phillips 66,,Common Stock,United States,true,369
+PNW,Pinnacle West Capital,,Common Stock,United States,true,370
+PNC,PNC Financial Services,,Common Stock,United States,true,371
+POOL,Pool Corporation,,Common Stock,United States,true,372
+PPG,PPG Industries,,Common Stock,United States,true,373
+PPL,PPL Corporation,,Common Stock,United States,true,374
+PFG,Principal Financial Group,,Common Stock,United States,true,375
+PG,Procter & Gamble,,Common Stock,United States,true,376
+PGR,Progressive Corporation,,Common Stock,United States,true,377
+PLD,Prologis,,Common Stock,United States,true,378
+PRU,Prudential Financial,,Common Stock,United States,true,379
+PEG,Public Service Enterprise Group,,Common Stock,United States,true,380
+PTC,PTC Inc.,,Common Stock,United States,true,381
+PSA,Public Storage,,Common Stock,United States,true,382
+PHM,PulteGroup,,Common Stock,United States,true,383
+PWR,Quanta Services,,Common Stock,United States,true,384
+QCOM,Qualcomm,,Common Stock,United States,true,385
+DGX,Quest Diagnostics,,Common Stock,United States,true,386
+Q,Qnity Electronics,,Common Stock,United States,true,387
+RL,Ralph Lauren Corporation,,Common Stock,United States,true,388
+RJF,Raymond James Financial,,Common Stock,United States,true,389
+RTX,RTX Corporation,,Common Stock,United States,true,390
+O,Realty Income,,Common Stock,United States,true,391
+REG,Regency Centers,,Common Stock,United States,true,392
+REGN,Regeneron Pharmaceuticals,,Common Stock,United States,true,393
+RF,Regions Financial Corporation,,Common Stock,United States,true,394
+RSG,Republic Services,,Common Stock,United States,true,395
+RMD,ResMed,,Common Stock,United States,true,396
+RVTY,Revvity,,Common Stock,United States,true,397
+HOOD,Robinhood Markets,,Common Stock,United States,true,398
+ROK,Rockwell Automation,,Common Stock,United States,true,399
+ROL,"Rollins, Inc.",,Common Stock,United States,true,400
+ROP,Roper Technologies,,Common Stock,United States,true,401
+ROST,Ross Stores,,Common Stock,United States,true,402
+RCL,Royal Caribbean Group,,Common Stock,United States,true,403
+SPGI,S&P Global,,Common Stock,United States,true,404
+CRM,Salesforce,,Common Stock,United States,true,405
+SNDK,Sandisk,,Common Stock,United States,true,406
+SBAC,SBA Communications,,Common Stock,United States,true,407
+SLB,Schlumberger,,Common Stock,United States,true,408
+STX,Seagate Technology,,Common Stock,United States,true,409
+SRE,Sempra,,Common Stock,United States,true,410
+NOW,ServiceNow,,Common Stock,United States,true,411
+SHW,Sherwin-Williams,,Common Stock,United States,true,412
+SPG,Simon Property Group,,Common Stock,United States,true,413
+SWKS,Skyworks Solutions,,Common Stock,United States,true,414
+SJM,J.M. Smucker Company (The),,Common Stock,United States,true,415
+SW,Smurfit Westrock,,Common Stock,United States,true,416
+SNA,Snap-on,,Common Stock,United States,true,417
+SOLV,Solventum,,Common Stock,United States,true,418
+SO,Southern Company,,Common Stock,United States,true,419
+LUV,Southwest Airlines,,Common Stock,United States,true,420
+SWK,Stanley Black & Decker,,Common Stock,United States,true,421
+SBUX,Starbucks,,Common Stock,United States,true,422
+STT,State Street Corporation,,Common Stock,United States,true,423
+STLD,Steel Dynamics,,Common Stock,United States,true,424
+STE,Steris,,Common Stock,United States,true,425
+SYK,Stryker Corporation,,Common Stock,United States,true,426
+SMCI,Supermicro,,Common Stock,United States,true,427
+SYF,Synchrony Financial,,Common Stock,United States,true,428
+SNPS,Synopsys,,Common Stock,United States,true,429
+SYY,Sysco,,Common Stock,United States,true,430
+TMUS,T-Mobile US,,Common Stock,United States,true,431
+TROW,T. Rowe Price,,Common Stock,United States,true,432
+TTWO,Take-Two Interactive,,Common Stock,United States,true,433
+TPR,"Tapestry, Inc.",,Common Stock,United States,true,434
+TRGP,Targa Resources,,Common Stock,United States,true,435
+TGT,Target Corporation,,Common Stock,United States,true,436
+TEL,TE Connectivity,,Common Stock,United States,true,437
+TDY,Teledyne Technologies,,Common Stock,United States,true,438
+TER,Teradyne,,Common Stock,United States,true,439
+TSLA,"Tesla, Inc.",,Common Stock,United States,true,440
+TXN,Texas Instruments,,Common Stock,United States,true,441
+TPL,Texas Pacific Land Corporation,,Common Stock,United States,true,442
+TXT,Textron,,Common Stock,United States,true,443
+TMO,Thermo Fisher Scientific,,Common Stock,United States,true,444
+TJX,TJX Companies,,Common Stock,United States,true,445
+TKO,TKO Group Holdings,,Common Stock,United States,true,446
+TTD,Trade Desk (The),,Common Stock,United States,true,447
+TSCO,Tractor Supply,,Common Stock,United States,true,448
+TT,Trane Technologies,,Common Stock,United States,true,449
+TDG,TransDigm Group,,Common Stock,United States,true,450
+TRV,Travelers Companies (The),,Common Stock,United States,true,451
+TRMB,Trimble Inc.,,Common Stock,United States,true,452
+TFC,Truist Financial,,Common Stock,United States,true,453
+TYL,Tyler Technologies,,Common Stock,United States,true,454
+TSN,Tyson Foods,,Common Stock,United States,true,455
+USB,U.S. Bancorp,,Common Stock,United States,true,456
+UBER,Uber,,Common Stock,United States,true,457
+UDR,"UDR, Inc.",,Common Stock,United States,true,458
+ULTA,Ulta Beauty,,Common Stock,United States,true,459
+UNP,Union Pacific Corporation,,Common Stock,United States,true,460
+UAL,United Airlines Holdings,,Common Stock,United States,true,461
+UPS,United Parcel Service,,Common Stock,United States,true,462
+URI,United Rentals,,Common Stock,United States,true,463
+UNH,UnitedHealth Group,,Common Stock,United States,true,464
+UHS,Universal Health Services,,Common Stock,United States,true,465
+VLO,Valero Energy,,Common Stock,United States,true,466
+VTR,Ventas,,Common Stock,United States,true,467
+VLTO,Veralto,,Common Stock,United States,true,468
+VRSN,Verisign,,Common Stock,United States,true,469
+VRSK,Verisk Analytics,,Common Stock,United States,true,470
+VZ,Verizon,,Common Stock,United States,true,471
+VRTX,Vertex Pharmaceuticals,,Common Stock,United States,true,472
+VRT,Vertiv,,Common Stock,United States,true,473
+VTRS,Viatris,,Common Stock,United States,true,474
+VICI,Vici Properties,,Common Stock,United States,true,475
+V,Visa Inc.,,Common Stock,United States,true,476
+VST,Vistra Corp.,,Common Stock,United States,true,477
+VMC,Vulcan Materials Company,,Common Stock,United States,true,478
+WRB,W. R. Berkley Corporation,,Common Stock,United States,true,479
+GWW,W. W. Grainger,,Common Stock,United States,true,480
+WAB,Wabtec,,Common Stock,United States,true,481
+WMT,Walmart,,Common Stock,United States,true,482
+DIS,Walt Disney Company (The),,Common Stock,United States,true,483
+WBD,Warner Bros. Discovery,,Common Stock,United States,true,484
+WM,Waste Management,,Common Stock,United States,true,485
+WAT,Waters Corporation,,Common Stock,United States,true,486
+WEC,WEC Energy Group,,Common Stock,United States,true,487
+WFC,Wells Fargo,,Common Stock,United States,true,488
+WELL,Welltower,,Common Stock,United States,true,489
+WST,West Pharmaceutical Services,,Common Stock,United States,true,490
+WDC,Western Digital,,Common Stock,United States,true,491
+WY,Weyerhaeuser,,Common Stock,United States,true,492
+WSM,"Williams-Sonoma, Inc.",,Common Stock,United States,true,493
+WMB,Williams Companies,,Common Stock,United States,true,494
+WTW,Willis Towers Watson,,Common Stock,United States,true,495
+WDAY,"Workday, Inc.",,Common Stock,United States,true,496
+WYNN,Wynn Resorts,,Common Stock,United States,true,497
+XEL,Xcel Energy,,Common Stock,United States,true,498
+XYL,Xylem Inc.,,Common Stock,United States,true,499
+YUM,Yum! Brands,,Common Stock,United States,true,500
+ZBRA,Zebra Technologies,,Common Stock,United States,true,501
+ZBH,Zimmer Biomet,,Common Stock,United States,true,502
+ZTS,Zoetis,,Common Stock,United States,true,503
+VOO,Vanguard S&P 500 ETF,,ETF,United States,true,504
+IVV,iShares Core S&P 500 ETF,,ETF,United States,true,505
+SPY,State Street SPDR S&P 500 ETF,,ETF,United States,true,506
+VTI,Vanguard Total Stock Market ETF,,ETF,United States,true,507
+QQQ,Invesco QQQ Trust Series I,,ETF,United States,true,508
+VEA,Vanguard FTSE Developed Markets ETF,,ETF,United States,true,509
+VUG,Vanguard Growth ETF,,ETF,United States,true,510
+GLD,SPDR Gold Shares,,ETF,United States,true,511
+IEFA,iShares Core MSCI EAFE ETF,,ETF,United States,true,512
+VTV,Vanguard Value ETF,,ETF,United States,true,513
+BND,Vanguard Total Bond Market ETF,,ETF,United States,true,514
+IEMG,iShares Core MSCI Emerging Markets ETF,,ETF,United States,true,515
+VXUS,Vanguard Total International Stock ETF,,ETF,United States,true,516
+AGG,iShares Core U.S. Aggregate Bond ETF,,ETF,United States,true,517
+VWO,Vanguard FTSE Emerging Markets ETF,,ETF,United States,true,518
+IWF,iShares Russell 1000 Growth ETF,,ETF,United States,true,519
+VGT,Vanguard Information Technology ETF,,ETF,United States,true,520
+IJH,iShares Core S&P Mid-Cap ETF,,ETF,United States,true,521
+SPYM,State Street SPDR Portfolio S&P 500 ETF,,ETF,United States,true,522
+VIG,Vanguard Dividend Appreciation ETF,,ETF,United States,true,523
+VO,Vanguard Mid-Cap ETF,,ETF,United States,true,524
+IJR,iShares Core S&P Small-Cap ETF,,ETF,United States,true,525
+XLK,State Street Technology Select Sector SPDR ETF,,ETF,United States,true,526
+RSP,Invesco S&P 500 Equal Weight ETF,,ETF,United States,true,527
+SCHD,Schwab US Dividend Equity ETF,,ETF,United States,true,528
+IAU,iShares Gold Trust,,ETF,United States,true,529
+ITOT,iShares Core S&P Total U.S. Stock Market ETF,,ETF,United States,true,530
+EFA,iShares MSCI EAFE ETF,,ETF,United States,true,531
+BNDX,Vanguard Total International Bond ETF,,ETF,United States,true,532
+VYM,Vanguard High Dividend Yield Index ETF,,ETF,United States,true,533
+SGOV,iShares 0-3 Month Treasury Bond ETF,,ETF,United States,true,534
+IWM,iShares Russell 2000 ETF,,ETF,United States,true,535
+VB,Vanguard Small Cap ETF,,ETF,United States,true,536
+QQQM,Invesco NASDAQ 100 ETF,,ETF,United States,true,537
+IWD,iShares Russell 1000 Value ETF,,ETF,United States,true,538
+VT,Vanguard Total World Stock ETF,,ETF,United States,true,539
+VCIT,Vanguard Intermediate-Term Corporate Bond ETF,,ETF,United States,true,540
+IVW,iShares S&P 500 Growth ETF,,ETF,United States,true,541
+SCHX,Schwab U.S. Large-Cap ETF,,ETF,United States,true,542
+VEU,Vanguard FTSE All-World ex-US Index Fund,,ETF,United States,true,543
+SCHF,Schwab International Equity ETF,,ETF,United States,true,544
+IXUS,iShares Core MSCI Total International Stock ETF,,ETF,United States,true,545
+SCHG,Schwab U.S. Large-Cap Growth ETF,,ETF,United States,true,546
+XLF,State Street Financial Select Sector SPDR ETF,,ETF,United States,true,547
+QUAL,iShares MSCI USA Quality Factor ETF,,ETF,United States,true,548
+IVE,iShares S&P 500 Value ETF,,ETF,United States,true,549
+IWR,iShares Russell Midcap ETF,,ETF,United States,true,550
+SMH,VanEck Semiconductor ETF,,ETF,United States,true,551
+IEF,iShares 7-10 Year Treasury Bond ETF,,ETF,United States,true,552
+VV,Vanguard Large Cap ETF,,ETF,United States,true,553

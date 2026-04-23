@@ -1,58 +1,41 @@
 # Backlog
 
-## Symbol reference ingestion: US stocks + watchlist-seen ETFs
+## Full symbol-master coverage beyond the curated history universe
 
-Goal: add an application-level `symbol_master` reference table for server-side symbol validation and future symbol search without claiming full market-wide coverage.
+Goal: expand validation and symbol search beyond the curated charting universe without overstating market-wide coverage.
 
-Planned scope:
-- load US stocks from a reference-data source with a daily refresh cadence
-- enrich ETFs only when they appear in user watchlists
-- keep v1 coverage explicit: US stocks plus watchlist-seen ETFs, not a universal symbol master
+Current implementation:
+- `symbol_master` now exists and supports the historical charting subsystem
+- the charting pipeline is intentionally limited to a curated universe instead of the full listed market
 
-Primary implementation approach:
-- add a `symbol_master` table in Supabase
-- run a dedicated worker job once per day
-- fetch US stock reference data from Twelve Data reference endpoints
-- upsert rows idempotently by `symbol`
-- mark ETF rows that were introduced through watchlist usage so the app can validate them without claiming full ETF coverage
+Backlog scope:
+- ingest a broader US stock universe for validation and search
+- decide whether ETF coverage should remain watchlist-driven or expand into a fuller reference dataset
+- keep the charting universe and the validation universe explicit so the product does not claim complete market coverage by accident
 
-Alternative provider options:
+Provider options to evaluate:
+- Twelve Data reference endpoints for a single-provider story
 - Alpaca `GET /v2/assets`
-  - plausible source for app-level US equities and ETF reference data
-  - useful `active` and `tradable` metadata
-  - caveat: Alpaca status flags reflect Alpaca platform tradability, not universal market truth
+  - useful `active` and `tradable` fields
+  - caveat: tradability is Alpaca-specific, not universal market truth
 - SEC EDGAR API
-  - useful as a supplemental issuer/company metadata source
-  - not sufficient by itself as the canonical symbol master
-  - weak fit for ETF coverage, exchange truth, and tradability state
-
-Proposed schema fields:
-- `symbol`
-- `name`
-- `exchange`
-- `instrument_type`
-- `country`
-- `is_active`
-- `is_watchlist_seen_etf`
-- `source`
-- `source_status`
-- `last_refreshed_at`
-- `raw_payload`
+  - useful supplemental issuer metadata
+  - not sufficient alone as the canonical exchange and symbol directory
 
 Acceptance criteria:
-- daily refresh job upserts stock reference rows without duplicates
-- watchlist-seen ETFs can be inserted and enriched without requiring full ETF coverage
-- watchlist add flow can validate symbol existence against `symbol_master`
-- invalid/nonexistent symbols are rejected once reference-data validation is enabled
-- docs continue to state that full symbol-master coverage remains backlog
+- watchlist add flow can validate existence against `symbol_master`
+- symbol search works without granting access to non-watchlist chart data
+- docs continue to describe any ETF or market-coverage limits honestly
 
 Follow-on backlog:
-- full symbol-master refresh beyond US stocks plus watchlist-seen ETFs
+- full market-wide symbol search and reference-data reconciliation
 
 ## Operations and Product
 
 - alerting for stale quote thresholds and repeated worker failures
 - richer historical charts and anomaly detection
-- symbol search backed by `symbol_master`
+- comparative multi-symbol history views
+- historical batch health surfaced in the UI from `historical_job_runs`
+- symbol search backed by the expanded `symbol_master`
 - incident timeline page for ops debugging
 - multi-source failover if Twelve Data becomes unavailable

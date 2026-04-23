@@ -58,6 +58,45 @@ create table if not exists public.ingestion_runs (
   error_details jsonb not null default '[]'::jsonb
 );
 
+create table if not exists public.symbol_master (
+  id bigint generated always as identity primary key,
+  symbol text not null unique check (symbol = upper(symbol)),
+  name text,
+  exchange text,
+  instrument_type text,
+  country text,
+  is_active boolean not null default true,
+  is_curated boolean not null default false,
+  curated_rank integer,
+  last_refreshed_at timestamptz,
+  source text not null,
+  source_status text,
+  raw_payload jsonb not null default '{}'::jsonb
+);
+
+create table if not exists public.daily_price_history (
+  id bigint generated always as identity primary key,
+  symbol_id bigint not null references public.symbol_master(id) on delete cascade,
+  trading_date date not null,
+  adjusted_close numeric(18,6) not null,
+  volume bigint,
+  unique (symbol_id, trading_date)
+);
+
+create table if not exists public.historical_job_runs (
+  id uuid primary key default gen_random_uuid(),
+  job_type text not null,
+  started_at timestamptz not null default now(),
+  completed_at timestamptz,
+  status text not null check (status in ('running', 'success', 'partial', 'error')),
+  symbols_considered integer not null default 0,
+  rows_inserted integer not null default 0,
+  rows_updated integer not null default 0,
+  rows_deleted integer not null default 0,
+  error_count integer not null default 0,
+  error_details jsonb not null default '[]'::jsonb
+);
+
 create or replace view public.symbol_watchlist_rollup
 with (security_invoker = true) as
 select
@@ -70,6 +109,9 @@ alter table public.user_watchlists enable row level security;
 alter table public.quotes_current enable row level security;
 alter table public.quotes_history enable row level security;
 alter table public.ingestion_runs enable row level security;
+alter table public.symbol_master enable row level security;
+alter table public.daily_price_history enable row level security;
+alter table public.historical_job_runs enable row level security;
 
 drop policy if exists "watchlist_select_own" on public.user_watchlists;
 create policy "watchlist_select_own"
@@ -112,6 +154,42 @@ drop policy if exists "runs_public_read" on public.ingestion_runs;
 drop policy if exists "runs_authenticated_read" on public.ingestion_runs;
 create policy "runs_authenticated_read"
 on public.ingestion_runs
+for select
+to authenticated
+using (true);
+
+drop policy if exists "symbol_master_authenticated_watchlist_read" on public.symbol_master;
+create policy "symbol_master_authenticated_watchlist_read"
+on public.symbol_master
+for select
+to authenticated
+using (
+  exists (
+    select 1
+    from public.user_watchlists uw
+    where uw.symbol = public.symbol_master.symbol
+      and uw.clerk_user_id = ((select auth.jwt()) ->> 'sub')
+  )
+);
+
+drop policy if exists "daily_history_authenticated_watchlist_read" on public.daily_price_history;
+create policy "daily_history_authenticated_watchlist_read"
+on public.daily_price_history
+for select
+to authenticated
+using (
+  exists (
+    select 1
+    from public.symbol_master sm
+    join public.user_watchlists uw on uw.symbol = sm.symbol
+    where sm.id = public.daily_price_history.symbol_id
+      and uw.clerk_user_id = ((select auth.jwt()) ->> 'sub')
+  )
+);
+
+drop policy if exists "historical_job_runs_authenticated_read" on public.historical_job_runs;
+create policy "historical_job_runs_authenticated_read"
+on public.historical_job_runs
 for select
 to authenticated
 using (true);
@@ -170,3 +248,6 @@ $$;
 create index if not exists user_watchlists_symbol_idx on public.user_watchlists(symbol);
 create index if not exists quotes_history_symbol_as_of_idx on public.quotes_history(symbol, as_of desc);
 create index if not exists ingestion_runs_started_at_idx on public.ingestion_runs(started_at desc);
+create index if not exists symbol_master_curated_rank_idx on public.symbol_master(curated_rank);
+create index if not exists daily_price_history_symbol_id_trading_date_idx on public.daily_price_history(symbol_id, trading_date desc);
+create index if not exists historical_job_runs_started_at_idx on public.historical_job_runs(started_at desc);

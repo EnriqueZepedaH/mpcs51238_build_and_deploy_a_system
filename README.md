@@ -6,9 +6,12 @@ Market Pulse is a realtime stock watchlist system built for a systems architectu
 
 `Twelve Data -> Railway worker -> Supabase -> Realtime -> Next.js -> Vercel`
 
+`CSV / yfinance -> Python batch service -> Supabase`
+
 - `apps/worker`: polls Twelve Data, applies scheduling and rate limiting, then writes current and historical quote data into Supabase.
-- `apps/web`: Clerk-authenticated dashboard for watchlists, live quotes, and operational health.
-- `packages/shared`: shared quote models and freshness logic so the worker and frontend do not drift.
+- `apps/history-batch`: imports curated symbol metadata and long-range daily price history for charting and monthly reconciliation.
+- `apps/web`: Clerk-authenticated dashboard for watchlists, live quotes, historical performance, and operational health.
+- `packages/shared`: shared quote and history models so the worker, frontend, and batch layer do not drift.
 
 ## Why this repo is structured this way
 
@@ -28,8 +31,9 @@ That tradeoff is deliberate. For a portfolio project, correctness, observability
 3. Create `apps/web/.env.local` with the web app's public Supabase and Clerk variables.
 4. Create `apps/worker/.env.local` with the worker's Supabase service-role and Twelve Data variables.
 5. Create the Supabase schema from `supabase/schema.sql`.
-6. Run the web app with `npm run dev -- --filter=web`.
-7. Run the worker with `npm run dev -- --filter=worker`.
+6. If you want the history pipeline locally, create a Python virtualenv in `apps/history-batch`, install `requirements.txt`, and set `SUPABASE_DB_URL`.
+7. Run the web app with `npm run dev -- --filter=web`.
+8. Run the worker with `npm run dev -- --filter=worker`.
 
 ## Quality gates
 
@@ -42,14 +46,16 @@ That tradeoff is deliberate. For a portfolio project, correctness, observability
 
 - Vercel deploys `apps/web`
 - Railway deploys `apps/worker`
+- Railway cron or another scheduled runtime can execute `apps/history-batch`
 - Supabase hosts Postgres, auth-adjacent JWT integration, and Realtime
 
 ## Deploy checklist
 
 1. Create one Vercel project with root directory `apps/web`.
-2. Create one Railway service with root directory `apps/worker`.
+2. Create one Railway service for `apps/worker`.
 3. Configure the environment variables documented in `docs/runbook.md`.
 4. Deploy the worker first and verify `ingestion_runs` succeeds.
-5. Deploy the web app and verify sign-in, watchlist mutations, and live updates.
+5. Deploy the web app and verify sign-in, watchlist mutations, live updates, and historical chart reads.
+6. Configure the historical batch runtime separately if you want scheduled symbol-master reconciliation and daily-history maintenance.
 
 See `CLAUDE.md` for architecture, `docs/database-schema.md` for the data model, and `docs/runbook.md` for operational procedures.
