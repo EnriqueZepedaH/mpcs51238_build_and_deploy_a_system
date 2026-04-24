@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 import { Loader2, Trash2 } from "lucide-react";
 import {
@@ -12,17 +12,30 @@ import {
   type WatchlistItem
 } from "@market-pulse/shared";
 
-import { formatCompactNumber, formatCurrency, formatPercent, formatRelativeSeconds } from "@/lib/format";
+import {
+  formatCompactNumber,
+  formatCurrency,
+  formatPercent,
+  formatRelativeSeconds
+} from "@/lib/format";
 import { useSupabaseBrowserClient } from "@/lib/supabase-browser";
 import { HistoricalPerformancePanel } from "@/components/historical-performance-panel";
 import { KpiStrip } from "@/components/kpi-strip";
 import { PortfolioPanel } from "@/components/portfolio-panel";
+import { TickerTape } from "@/components/ticker-tape";
+
+export type HistoryPoint = {
+  symbol: string;
+  as_of: string;
+  price: number;
+};
 
 type DashboardClientProps = {
   initialWatchlist: WatchlistItem[];
   initialPortfolioLots: PortfolioLot[];
   initialQuotes: QuoteRecord[];
   initialRun: IngestionRunRecord | null;
+  initialHistory: HistoryPoint[];
   freshnessTargetSeconds: number;
   maxWatchlistSize: number;
   maxPortfolioSymbols: number;
@@ -33,11 +46,15 @@ type MutationState = {
   error: string | null;
 };
 
+const HISTORY_CAP_PER_SYMBOL = 60;
+const FLASH_DURATION_MS = 900;
+
 export function DashboardClient({
   initialWatchlist,
   initialPortfolioLots,
   initialQuotes,
   initialRun,
+  initialHistory,
   freshnessTargetSeconds,
   maxWatchlistSize,
   maxPortfolioSymbols
@@ -47,11 +64,16 @@ export function DashboardClient({
   const [quotes, setQuotes] = useState<Record<string, QuoteRecord>>(
     () => Object.fromEntries(initialQuotes.map((quote) => [quote.symbol, quote]))
   );
+  const [history, setHistory] = useState<Record<string, HistoryPoint[]>>(() =>
+    groupHistory(initialHistory)
+  );
   const [latestRun, setLatestRun] = useState(initialRun);
   const [symbolInput, setSymbolInput] = useState("");
   const [mutation, setMutation] = useState<MutationState>({ pending: false, error: null });
   const [removingSymbol, setRemovingSymbol] = useState<string | null>(null);
   const [clockMs, setClockMs] = useState(() => Date.now());
+  const [flashMap, setFlashMap] = useState<Record<string, "up" | "down">>({});
+  const flashTimeoutsRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const { client: supabase, realtimeReady } = useSupabaseBrowserClient();
 
   const watchlistSymbols = useMemo(() => watchlist.map((item) => item.symbol), [watchlist]);
@@ -72,6 +94,13 @@ export function DashboardClient({
   }, []);
 
   useEffect(() => {
+    return () => {
+      flashTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
+      flashTimeoutsRef.current.clear();
+    };
+  }, []);
+
+  useEffect(() => {
     if (!realtimeReady) {
       return;
     }
@@ -87,10 +116,51 @@ export function DashboardClient({
             return;
           }
 
-          setQuotes((current) => ({
-            ...current,
-            [next.symbol]: next
-          }));
+          setQuotes((current) => {
+            const previous = current[next.symbol];
+            const prevPrice = previous?.price;
+            if (
+              prevPrice != null &&
+              next.price != null &&
+              Number(prevPrice) !== Number(next.price)
+            ) {
+              const direction: "up" | "down" =
+                Number(next.price) > Number(prevPrice) ? "up" : "down";
+              setFlashMap((flashCurrent) => ({ ...flashCurrent, [next.symbol]: direction }));
+              const existing = flashTimeoutsRef.current.get(next.symbol);
+              if (existing) clearTimeout(existing);
+              const timeout = setTimeout(() => {
+                setFlashMap((flashCurrent) => {
+                  if (!(next.symbol in flashCurrent)) return flashCurrent;
+                  const copy = { ...flashCurrent };
+                  delete copy[next.symbol];
+                  return copy;
+                });
+                flashTimeoutsRef.current.delete(next.symbol);
+              }, FLASH_DURATION_MS);
+              flashTimeoutsRef.current.set(next.symbol, timeout);
+            }
+            return { ...current, [next.symbol]: next };
+          });
+
+          if (next.last_ingested_at && next.price != null) {
+            const point: HistoryPoint = {
+              symbol: next.symbol,
+              as_of: next.last_ingested_at,
+              price: Number(next.price)
+            };
+            setHistory((current) => {
+              const existing = current[next.symbol] ?? [];
+              const last = existing[existing.length - 1];
+              if (last && last.as_of === point.as_of) {
+                return current;
+              }
+              return {
+                ...current,
+                [next.symbol]: [...existing, point].slice(-HISTORY_CAP_PER_SYMBOL)
+              };
+            });
+          }
         }
       )
       .subscribe();
@@ -239,6 +309,7 @@ export function DashboardClient({
       <KpiStrip
         lots={portfolioLots}
         quotes={quotes}
+        history={history}
         watchlistCount={watchlist.length}
         latestRun={latestRun}
         freshnessTargetSeconds={freshnessTargetSeconds}
@@ -253,266 +324,267 @@ export function DashboardClient({
         onRemoveLot={removeLot}
       />
 
-      <section className="grid gap-6 xl:grid-cols-[1.5fr_0.8fr]">
-        <div className="space-y-4">
-          <section className="panel p-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <p className="font-display text-sm uppercase tracking-[0.24em] text-tide/70">
-                  Watchlist
-                </p>
-                <h2 className="mt-2 font-display text-2xl text-ink">
-                  Symbols you want to keep an eye on.
-                </h2>
-                <p className="mt-2 max-w-2xl text-sm leading-7 text-ink/75">
-                  Private to you, but the worker polls a shared pool to keep API costs bounded.
-                </p>
-              </div>
+      <TickerTape symbols={watchlistSymbols} quotes={quotes} />
 
-              <form action={addSymbol} className="flex flex-col gap-3 sm:flex-row">
-                <input
-                  name="symbol"
-                  value={symbolInput}
-                  onChange={(event) => setSymbolInput(event.target.value.toUpperCase())}
-                  maxLength={10}
-                  placeholder="AAPL"
-                  className="rounded-full border border-ink/10 bg-white px-5 py-2.5 text-sm outline-none transition focus:border-ember"
-                />
-                <button
-                  type="submit"
-                  disabled={mutation.pending || watchlist.length >= maxWatchlistSize}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-white transition hover:bg-tide disabled:cursor-not-allowed disabled:bg-ink/60"
-                >
-                  {mutation.pending && !removingSymbol ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : null}
-                  {mutation.pending && !removingSymbol ? "Adding..." : "Add symbol"}
-                </button>
-              </form>
+      <section className="space-y-4">
+        <section className="panel p-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="font-display text-xs uppercase tracking-[0.24em] text-tide/70">
+                Watchlist
+              </p>
+              <h2 className="mt-1 font-display text-2xl text-ink">Instruments under surveillance.</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/65">
+                Private to you. The worker polls a shared pool so API credits scale with activity, not with accounts.
+              </p>
             </div>
 
-            <div className="mt-3 flex flex-wrap gap-3 text-sm text-ink/60">
-              <span>{watchlist.length} / {maxWatchlistSize} symbols tracked</span>
-              {mutation.error ? <span className="text-ember">{mutation.error}</span> : null}
-            </div>
-          </section>
+            <form action={addSymbol} className="flex flex-col gap-3 sm:flex-row">
+              <input
+                name="symbol"
+                value={symbolInput}
+                onChange={(event) => setSymbolInput(event.target.value.toUpperCase())}
+                maxLength={10}
+                placeholder="AAPL"
+                className="rounded-full border border-ink/10 bg-white px-5 py-2.5 text-sm tabular-nums outline-none transition focus:border-ember"
+              />
+              <button
+                type="submit"
+                disabled={mutation.pending || watchlist.length >= maxWatchlistSize}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-white transition hover:bg-tide disabled:cursor-not-allowed disabled:bg-ink/60"
+              >
+                {mutation.pending && !removingSymbol ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : null}
+                {mutation.pending && !removingSymbol ? "Adding..." : "Add symbol"}
+              </button>
+            </form>
+          </div>
 
-          <div className="panel overflow-hidden">
-            <div className="hidden overflow-x-auto md:block">
-              <table className="min-w-full divide-y divide-ink/10 text-left">
-                <thead className="bg-white/70 text-xs uppercase tracking-[0.24em] text-tide/70">
+          <div className="mt-3 flex flex-wrap gap-3 text-sm text-ink/60">
+            <span>
+              {watchlist.length} / {maxWatchlistSize} symbols tracked
+            </span>
+            {mutation.error ? <span className="text-ember">{mutation.error}</span> : null}
+          </div>
+        </section>
+
+        <div className="panel overflow-hidden p-0">
+          <div className="hidden overflow-x-auto md:block">
+            <table className="min-w-full text-left">
+              <thead className="border-b border-ink/10 bg-white/60 text-[11px] uppercase tracking-[0.22em] text-tide/70">
+                <tr>
+                  <th className="px-5 py-3 font-medium">Symbol</th>
+                  <th className="px-5 py-3 font-medium">Trend · last {HISTORY_CAP_PER_SYMBOL}</th>
+                  <th className="px-5 py-3 text-right font-medium">Price</th>
+                  <th className="px-5 py-3 text-right font-medium">Δ day</th>
+                  <th className="px-5 py-3 text-right font-medium">Volume</th>
+                  <th className="px-5 py-3 text-right font-medium">Updated</th>
+                  <th className="px-5 py-3"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-ink/5">
+                {watchlist.length === 0 ? (
                   <tr>
-                    <th className="px-6 py-4">Symbol</th>
-                    <th className="px-6 py-4">Price</th>
-                    <th className="px-6 py-4">Change</th>
-                    <th className="px-6 py-4">Volume</th>
-                    <th className="px-6 py-4">Freshness</th>
-                    <th className="px-6 py-4 text-right">Action</th>
+                    <td className="px-5 py-12 text-center text-sm text-ink/50" colSpan={7}>
+                      Add a symbol to start feeding the worker queue.
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-ink/10 bg-white/50">
-                  {watchlist.length === 0 ? (
-                    <tr>
-                      <td className="px-6 py-10 text-sm text-ink/60" colSpan={6}>
-                        Add symbols to start feeding the worker queue.
-                      </td>
-                    </tr>
-                  ) : (
-                    watchlist.map((item) => {
-                      const quote = quotes[item.symbol];
-                      const ageSeconds = getQuoteAgeSeconds(quote?.last_ingested_at, clockMs);
-                      const freshness = getFreshnessStatus(
-                        quote?.last_ingested_at,
-                        freshnessTargetSeconds,
-                        clockMs
-                      );
+                ) : (
+                  watchlist.map((item, index) => {
+                    const quote = quotes[item.symbol];
+                    const ageSeconds = getQuoteAgeSeconds(quote?.last_ingested_at, clockMs);
+                    const freshness = getFreshnessStatus(
+                      quote?.last_ingested_at,
+                      freshnessTargetSeconds,
+                      clockMs
+                    );
+                    const pct = quote?.percent_change ?? null;
+                    const up = (pct ?? 0) >= 0;
+                    const flash = flashMap[item.symbol];
+                    const symbolHistory = history[item.symbol] ?? [];
 
-                      return (
-                        <tr key={item.id}>
-                          <td className="px-6 py-5">
+                    return (
+                      <tr
+                        key={item.id}
+                        className={clsx(
+                          "transition-colors",
+                          index % 2 === 1 && "bg-ink/[0.015]",
+                          flash === "up" && "price-flash-up",
+                          flash === "down" && "price-flash-down"
+                        )}
+                      >
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-2.5">
+                            <FreshnessDot freshness={freshness} />
                             <div>
-                              <p className="font-display text-lg text-ink">{item.symbol}</p>
-                              <p className="text-sm text-ink/60">{quote?.name ?? "Awaiting poll"}</p>
+                              <p className="font-display text-base font-semibold tracking-tight text-ink">
+                                {item.symbol}
+                              </p>
+                              <p className="truncate text-xs text-ink/50">
+                                {quote?.name ?? "Awaiting poll"}
+                              </p>
                             </div>
-                          </td>
-                          <td className="px-6 py-5 text-sm text-ink">{formatCurrency(quote?.price)}</td>
-                          <td className="px-6 py-5">
-                            <div
-                              className={clsx(
-                                "inline-flex rounded-full px-3 py-1 text-sm font-medium",
-                                (quote?.percent_change ?? 0) >= 0
-                                  ? "bg-mint/25 text-tide"
-                                  : "bg-ember/15 text-ember"
-                              )}
-                            >
-                              {formatPercent(quote?.percent_change)}
-                            </div>
-                          </td>
-                          <td className="px-6 py-5 text-sm text-ink/70">
-                            {formatCompactNumber(quote?.volume)}
-                          </td>
-                          <td className="px-6 py-5">
-                            <div className="flex items-center gap-3">
-                              <span
-                                className={clsx(
-                                  "h-3 w-3 rounded-full",
-                                  freshness === "fresh" && "bg-mint",
-                                  freshness === "degraded" && "bg-amber-400",
-                                  freshness === "stale" && "bg-ember"
-                                )}
-                              />
-                              <div className="text-sm text-ink/70">
-                                <p className="capitalize text-ink">{freshness}</p>
-                                <p>{formatRelativeSeconds(ageSeconds)}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-5 text-right">
-                            <button
-                              type="button"
-                              disabled={removingSymbol === item.symbol}
-                              onClick={() => void removeSymbol(item.symbol)}
-                              className="rounded-full border border-ink/10 p-2 text-ink/70 transition hover:border-ember hover:text-ember disabled:opacity-50"
-                              aria-label={`Remove ${item.symbol}`}
-                            >
-                              {removingSymbol === item.symbol ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <Trash2 className="h-4 w-4" />
-                              )}
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex flex-col gap-3 p-4 md:hidden">
-              {watchlist.length === 0 ? (
-                <p className="py-6 text-center text-sm text-ink/60">
-                  Add symbols to start feeding the worker queue.
-                </p>
-              ) : (
-                watchlist.map((item) => {
-                  const quote = quotes[item.symbol];
-                  const ageSeconds = getQuoteAgeSeconds(quote?.last_ingested_at, clockMs);
-                  const freshness = getFreshnessStatus(
-                    quote?.last_ingested_at,
-                    freshnessTargetSeconds,
-                    clockMs
-                  );
-                  return (
-                    <div
-                      key={item.id}
-                      className="rounded-2xl border border-ink/10 bg-white p-4"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <p className="font-display text-lg text-ink">{item.symbol}</p>
-                          <p className="text-xs text-ink/50">{quote?.name ?? "Awaiting poll"}</p>
-                        </div>
-                        <button
-                          type="button"
-                          disabled={removingSymbol === item.symbol}
-                          onClick={() => void removeSymbol(item.symbol)}
-                          className="rounded-full border border-ink/10 p-2 text-ink/70 transition hover:border-ember hover:text-ember disabled:opacity-50"
-                          aria-label={`Remove ${item.symbol}`}
-                        >
-                          {removingSymbol === item.symbol ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
+                          </div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <RowSparkline
+                            points={symbolHistory}
+                            fallbackPercent={pct}
+                          />
+                        </td>
+                        <td className="px-5 py-4 text-right font-display text-base tabular-nums text-ink">
+                          {formatCurrency(quote?.price)}
+                        </td>
+                        <td className="px-5 py-4 text-right">
+                          {pct == null ? (
+                            <span className="text-sm text-ink/40">—</span>
                           ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
-                      <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                          <p className="text-xs uppercase tracking-wide text-tide/70">Price</p>
-                          <p className="text-ink">{formatCurrency(quote?.price)}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs uppercase tracking-wide text-tide/70">Change</p>
-                          <p
-                            className={clsx(
-                              "font-medium",
-                              (quote?.percent_change ?? 0) >= 0 ? "text-tide" : "text-ember"
-                            )}
-                          >
-                            {formatPercent(quote?.percent_change)}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs uppercase tracking-wide text-tide/70">Volume</p>
-                          <p className="text-ink/70">{formatCompactNumber(quote?.volume)}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs uppercase tracking-wide text-tide/70">Freshness</p>
-                          <div className="flex items-center gap-2">
                             <span
                               className={clsx(
-                                "h-2 w-2 rounded-full",
-                                freshness === "fresh" && "bg-mint",
-                                freshness === "degraded" && "bg-amber-400",
-                                freshness === "stale" && "bg-ember"
+                                "inline-flex items-center gap-1 font-display text-sm font-semibold tabular-nums",
+                                up ? "text-emerald-700" : "text-rose-700"
                               )}
-                            />
-                            <span className="text-ink/70">{formatRelativeSeconds(ageSeconds)}</span>
-                          </div>
+                            >
+                              <span aria-hidden>{up ? "▲" : "▼"}</span>
+                              {formatPercent(Math.abs(pct))}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-5 py-4 text-right text-sm tabular-nums text-ink/65">
+                          {formatCompactNumber(quote?.volume)}
+                        </td>
+                        <td className="px-5 py-4 text-right text-xs tabular-nums text-ink/50">
+                          {formatRelativeSeconds(ageSeconds)}
+                        </td>
+                        <td className="px-5 py-4 text-right">
+                          <button
+                            type="button"
+                            disabled={removingSymbol === item.symbol}
+                            onClick={() => void removeSymbol(item.symbol)}
+                            className="rounded-full border border-ink/10 p-2 text-ink/55 transition hover:border-rose-400 hover:text-rose-600 disabled:opacity-50"
+                            aria-label={`Remove ${item.symbol}`}
+                          >
+                            {removingSymbol === item.symbol ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex flex-col gap-3 p-4 md:hidden">
+            {watchlist.length === 0 ? (
+              <p className="py-6 text-center text-sm text-ink/60">
+                Add a symbol to start feeding the worker queue.
+              </p>
+            ) : (
+              watchlist.map((item) => {
+                const quote = quotes[item.symbol];
+                const ageSeconds = getQuoteAgeSeconds(quote?.last_ingested_at, clockMs);
+                const freshness = getFreshnessStatus(
+                  quote?.last_ingested_at,
+                  freshnessTargetSeconds,
+                  clockMs
+                );
+                const pct = quote?.percent_change ?? null;
+                const up = (pct ?? 0) >= 0;
+                const flash = flashMap[item.symbol];
+                const symbolHistory = history[item.symbol] ?? [];
+
+                return (
+                  <div
+                    key={item.id}
+                    className={clsx(
+                      "rounded-2xl border border-ink/10 bg-white p-4 transition-colors",
+                      flash === "up" && "price-flash-up",
+                      flash === "down" && "price-flash-down"
+                    )}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2.5">
+                        <FreshnessDot freshness={freshness} />
+                        <div>
+                          <p className="font-display text-lg font-semibold text-ink">
+                            {item.symbol}
+                          </p>
+                          <p className="text-xs text-ink/50">{quote?.name ?? "Awaiting poll"}</p>
                         </div>
                       </div>
+                      <button
+                        type="button"
+                        disabled={removingSymbol === item.symbol}
+                        onClick={() => void removeSymbol(item.symbol)}
+                        className="rounded-full border border-ink/10 p-2 text-ink/60 transition hover:border-rose-400 hover:text-rose-600 disabled:opacity-50"
+                        aria-label={`Remove ${item.symbol}`}
+                      >
+                        {removingSymbol === item.symbol ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
+                      </button>
                     </div>
-                  );
-                })
-              )}
-            </div>
+                    <div className="mt-3">
+                      <RowSparkline points={symbolHistory} fallbackPercent={pct} height={32} />
+                    </div>
+                    <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.22em] text-tide/70">
+                          Price
+                        </p>
+                        <p className="font-display tabular-nums text-ink">
+                          {formatCurrency(quote?.price)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.22em] text-tide/70">
+                          Δ day
+                        </p>
+                        {pct == null ? (
+                          <p className="text-ink/40">—</p>
+                        ) : (
+                          <p
+                            className={clsx(
+                              "font-display tabular-nums",
+                              up ? "text-emerald-700" : "text-rose-700"
+                            )}
+                          >
+                            {up ? "▲ +" : "▼ "}
+                            {pct.toFixed(2)}%
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.22em] text-tide/70">
+                          Volume
+                        </p>
+                        <p className="tabular-nums text-ink/70">
+                          {formatCompactNumber(quote?.volume)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.22em] text-tide/70">
+                          Updated
+                        </p>
+                        <p className="tabular-nums text-ink/70">
+                          {formatRelativeSeconds(ageSeconds)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
-
-        <aside className="space-y-6">
-          <section className="panel p-6">
-            <p className="font-display text-sm uppercase tracking-[0.24em] text-tide/70">
-              Pipeline health
-            </p>
-            <h3 className="mt-2 font-display text-2xl text-ink">Operational visibility is part of the product.</h3>
-            <div className="mt-6 space-y-4">
-              <MetricRow label="Latest run" value={latestRun?.status ?? "No runs yet"} />
-              <MetricRow
-                label="Symbols polled"
-                value={
-                  latestRun
-                    ? `${latestRun.symbols_polled} / ${latestRun.symbols_considered}`
-                    : "--"
-                }
-              />
-              <MetricRow
-                label="Rows written"
-                value={latestRun ? String(latestRun.rows_written) : "--"}
-              />
-              <MetricRow
-                label="Stale symbols"
-                value={latestRun ? String(latestRun.stale_symbols) : "--"}
-              />
-              <MetricRow
-                label="Error count"
-                value={latestRun ? String(latestRun.error_count) : "--"}
-              />
-            </div>
-          </section>
-
-          <section className="panel p-6">
-            <p className="font-display text-sm uppercase tracking-[0.24em] text-tide/70">
-              Design tradeoff
-            </p>
-            <p className="mt-3 text-sm leading-7 text-ink/75">
-              Per-user polling would feel simpler to reason about, but it burns API credits fast
-              and scales poorly. This system polls a shared demand pool and then fans data out via
-              Supabase Realtime, which is the right architecture for low-cost shared live data.
-            </p>
-          </section>
-        </aside>
       </section>
 
       <HistoricalPerformancePanel symbols={watchlistSymbols} />
@@ -520,11 +592,96 @@ export function DashboardClient({
   );
 }
 
-function MetricRow({ label, value }: { label: string; value: string }) {
+function FreshnessDot({ freshness }: { freshness: "fresh" | "degraded" | "stale" }) {
+  const bg =
+    freshness === "fresh"
+      ? "bg-emerald-500"
+      : freshness === "degraded"
+        ? "bg-amber-400"
+        : "bg-rose-500";
+  const ring =
+    freshness === "fresh"
+      ? "ring-emerald-500/25"
+      : freshness === "degraded"
+        ? "ring-amber-400/30"
+        : "ring-rose-500/25";
   return (
-    <div className="flex items-center justify-between rounded-2xl border border-ink/10 bg-white px-4 py-3">
-      <span className="text-sm text-ink/60">{label}</span>
-      <span className="font-display text-lg text-ink">{value}</span>
-    </div>
+    <span
+      aria-hidden
+      className={clsx("inline-block h-2 w-2 shrink-0 rounded-full ring-4", bg, ring)}
+      title={`Freshness: ${freshness}`}
+    />
   );
+}
+
+function RowSparkline({
+  points,
+  fallbackPercent,
+  height = 28
+}: {
+  points: HistoryPoint[];
+  fallbackPercent: number | null;
+  height?: number;
+}) {
+  if (points.length < 2) {
+    return (
+      <span className="inline-block h-[1px] w-16 bg-ink/10" aria-hidden />
+    );
+  }
+
+  const values = points.map((p) => p.price);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const width = 110;
+  const stepX = width / (values.length - 1);
+
+  const first = values[0];
+  const last = values[values.length - 1];
+  const up = first != null && last != null ? last >= first : (fallbackPercent ?? 0) >= 0;
+  const stroke = up ? "#10b981" : "#f43f5e";
+
+  const d = values
+    .map((v, i) => {
+      const x = (i * stepX).toFixed(1);
+      const y = (height - 1 - ((v - min) / range) * (height - 2)).toFixed(1);
+      return `${i === 0 ? "M" : "L"}${x},${y}`;
+    })
+    .join(" ");
+
+  return (
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="h-7 w-[110px]"
+      preserveAspectRatio="none"
+      aria-hidden
+    >
+      <path
+        d={d}
+        fill="none"
+        stroke={stroke}
+        strokeWidth={1.25}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function groupHistory(rows: HistoryPoint[]): Record<string, HistoryPoint[]> {
+  const grouped: Record<string, HistoryPoint[]> = {};
+  for (const row of rows) {
+    (grouped[row.symbol] ??= []).push({
+      symbol: row.symbol,
+      as_of: row.as_of,
+      price: Number(row.price)
+    });
+  }
+  for (const symbol in grouped) {
+    grouped[symbol]!.sort((a, b) => a.as_of.localeCompare(b.as_of));
+    if (grouped[symbol]!.length > HISTORY_CAP_PER_SYMBOL) {
+      grouped[symbol] = grouped[symbol]!.slice(-HISTORY_CAP_PER_SYMBOL);
+    }
+  }
+  return grouped;
 }

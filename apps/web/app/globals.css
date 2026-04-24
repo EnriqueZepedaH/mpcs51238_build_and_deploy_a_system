@@ -24,3 +24,68 @@ body {
   @apply grid gap-4 md:grid-cols-2 xl:grid-cols-4;
 }
 
+@keyframes ticker-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.ticker-tape {
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black 3rem,
+    black calc(100% - 3rem),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black 3rem,
+    black calc(100% - 3rem),
+    transparent 100%
+  );
+}
+
+.ticker-tape__track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll 55s linear infinite;
+  will-change: transform;
+}
+
+.ticker-tape:hover .ticker-tape__track {
+  animation-play-state: paused;
+}
+
+@keyframes price-flash-up {
+  0% {
+    background-color: rgba(16, 185, 129, 0.22);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes price-flash-down {
+  0% {
+    background-color: rgba(244, 63, 94, 0.22);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.price-flash-up {
+  animation: price-flash-up 900ms ease-out;
+}
+
+.price-flash-down {
+  animation: price-flash-down 900ms ease-out;
+}
+
