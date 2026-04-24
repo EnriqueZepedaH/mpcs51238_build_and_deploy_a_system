@@ -8,7 +8,7 @@ Market Pulse is a multi-service system that combines realtime quote ingestion wi
 
 ### `apps/worker`
 
-- reads the global union of symbols from `user_watchlists`
+- reads the global union of symbols from `user_watchlists` and `user_portfolio_lots` so owned positions stay fresh even when they are not watched
 - prioritizes symbols with a scheduler that balances watcher demand and quote staleness
 - fetches batched quotes from Twelve Data within the free-tier credit budget
 - upserts `quotes_current`
@@ -26,22 +26,23 @@ Market Pulse is a multi-service system that combines realtime quote ingestion wi
 ### `apps/web`
 
 - authenticates users with Clerk
-- lets users manage a private watchlist
+- lets users manage a private watchlist and a private portfolio of buy lots, capped at 15 distinct symbols per user
+- computes unrealized P&L in the browser from current quotes and stored cost basis
 - reads quote snapshots from Supabase
-- reads long-range daily history for watchlist-scoped charts
+- reads long-range daily history for watchlist-scoped charts and for the portfolio "fill from historical close" action
 - subscribes to Realtime changes for `quotes_current` and `ingestion_runs`
 - renders both business data and operational health
 
 ### `supabase`
 
 - stores personalization, serving data, historical snapshots, and ops metadata
-- enforces row-level controls on watchlist data
+- enforces row-level controls on watchlist and portfolio data
 - publishes realtime updates for quote and health tables
 
 ## Core data flow
 
-1. A signed-in user adds symbols to `user_watchlists`.
-2. The live worker aggregates all tracked symbols.
+1. A signed-in user adds symbols to `user_watchlists` or buy lots to `user_portfolio_lots`.
+2. The live worker aggregates all tracked symbols across both tables.
 3. The scheduler chooses the next batch based on watcher count and staleness.
 4. Quotes are fetched from Twelve Data and normalized.
 5. Current state is upserted into `quotes_current`.
@@ -67,3 +68,4 @@ Market Pulse is a multi-service system that combines realtime quote ingestion wi
 - monthly reconciliation keeps the curated symbol dimension and recent history window healthy without claiming universal market coverage
 - the current curated universe is the live S&P 500 constituent list plus the top 50 ETFs by AUM, for a total of 553 symbols
 - watchlist users can query historical performance only for symbols they already track; chart access is intentionally scoped by watchlist membership
+- the portfolio lot entry flow only accepts curated-universe symbols; non-curated symbols surface a "premium" lock in the UI and a 402 response from `/api/portfolio`, which stands in for a future paid tier rather than a real paywall

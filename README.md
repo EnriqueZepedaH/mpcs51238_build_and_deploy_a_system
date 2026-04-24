@@ -1,6 +1,6 @@
 # Market Pulse Pipeline
 
-Market Pulse is a realtime stock watchlist system built for a systems architecture course and positioned as a portfolio-grade data engineering project. It now supports both live quote monitoring and watchlist-scoped historical performance charts backed by long-range daily price history in Supabase.
+Market Pulse is a realtime stock watchlist system built for a systems architecture course and positioned as a portfolio-grade data engineering project. It supports live quote monitoring, portfolio lot tracking with unrealized P&L, and watchlist-scoped historical performance charts backed by long-range daily price history in Supabase.
 
 ## Architecture
 
@@ -17,6 +17,8 @@ Market Pulse is a realtime stock watchlist system built for a systems architectu
 
 - private, authenticated watchlists
 - live quote polling with Supabase Realtime updates
+- portfolio lot tracking (up to 15 distinct symbols, unlimited lots per symbol) with live unrealized P&L, aggregated summary, and per-lot detail views
+- "fill from historical close" on lot entry backed by `daily_price_history`, with a premium lock on symbols outside the curated universe
 - visible pipeline health from `ingestion_runs`
 - reference-date historical performance charts for watchlist symbols
 - a curated long-range history universe of:
@@ -67,7 +69,7 @@ That tradeoff is deliberate. For a portfolio project, correctness, observability
 2. Create one Railway service for `apps/worker`.
 3. Configure the environment variables documented in `docs/runbook.md`.
 4. Deploy the worker first and verify `ingestion_runs` succeeds.
-5. Deploy the web app and verify sign-in, watchlist mutations, live updates, and historical chart reads.
+5. Deploy the web app and verify sign-in, watchlist and portfolio mutations, live updates, and historical chart reads.
 6. Configure the historical batch runtime separately if you want scheduled symbol-master reconciliation and daily-history maintenance.
 
 ## Known constraints
