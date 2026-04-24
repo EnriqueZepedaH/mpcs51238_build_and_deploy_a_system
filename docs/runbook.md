@@ -93,8 +93,14 @@ This slows the import but reduces multi-symbol provider failures during large ba
 5. Remove a symbol and confirm the watchlist updates immediately.
 6. Confirm the latest `ingestion_runs` row is `success`.
 7. Add a portfolio lot (e.g. 10 shares of `AAPL` at a known cost basis), toggle the portfolio panel between Summary and Lots, and confirm unrealized P&L updates when the next poll cycle writes to `quotes_current`. Attempt to add a 16th distinct symbol and confirm the API rejects it with `Portfolio symbol limit reached`.
-7. If `symbol_master` and `daily_price_history` have been loaded, confirm the historical chart renders for a watchlist symbol and that a reference date earlier than stored history is clamped with a visible explanation.
-8. Confirm the historical chart presets (`6M`, `1Y`, `5Y`, `Max`) and the `% return` / `Price delta` toggle both behave correctly.
+8. Confirm the ticker-tape marquee at the top of the watchlist scrolls smoothly and pauses on hover, and confirm that when a Realtime quote update arrives the relevant watchlist row briefly flashes (green for up, rose for down).
+9. If `symbol_master` and `daily_price_history` have been loaded, confirm the historical chart renders for a watchlist symbol and that a reference date earlier than stored history is clamped with a visible "clamped to earliest stored row" flag.
+10. Confirm the historical chart timeframe presets (`6M`, `1Y`, `5Y`, `Max`) and the `% Return` / `Price Δ` segmented control both behave correctly, and that hovering the chart surfaces a crosshair tooltip with the date, metric value, and that day's close.
+11. Open `/dashboard/observability` and confirm:
+    - the ops KPI strip renders latest-run status with duration, success rate over the last 20 runs, API credits used in the last 24h, and the current stalest symbol
+    - the run timeline strip shows up to 40 colored dots sized by run duration, with a hover tooltip exposing per-run metrics (symbols polled, rows written, credits, stale, errors)
+    - the stale-symbols grid lists the top 10 stalest rows with a `Show all` toggle, and freshness pills render as `fresh` / `degraded` / `stale`
+    - after a new ingestion run completes, a new dot appears at the right edge of the timeline and the KPIs refresh without a page reload
 
 ## Failure modes
 

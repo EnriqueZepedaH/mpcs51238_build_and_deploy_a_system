@@ -19,11 +19,20 @@ Market Pulse is a realtime stock watchlist system built for a systems architectu
 - live quote polling with Supabase Realtime updates
 - portfolio lot tracking (up to 15 distinct symbols, unlimited lots per symbol) with live unrealized P&L, aggregated summary, and per-lot detail views
 - "fill from historical close" on lot entry backed by `daily_price_history`, with a premium lock on symbols outside the curated universe
-- visible pipeline health from `ingestion_runs`
-- reference-date historical performance charts for watchlist symbols
+- visible pipeline health from `ingestion_runs`, surfaced both inline on the portfolio tab and as a dedicated observability tab with run timeline, stalest-symbol grid, and ingestion KPIs
+- reference-date historical performance charts for watchlist symbols, with a segmented `% Return` / `Price Δ` toggle, timeframe presets, and an interactive hover crosshair
+- per-symbol live sparklines and a ticker-tape marquee driven by `quotes_history` plus realtime updates
 - a curated long-range history universe of:
   - current S&P 500 constituents
   - top 50 ETFs by AUM
+
+## UI structure
+
+- `/` — public landing page with an animated mock ticker, architecture overview, and feature summary
+- `/dashboard` — authenticated portfolio tab: hero KPI strip, portfolio panel, ticker-tape, watchlist table with sparklines, and historical performance chart
+- `/dashboard/observability` — authenticated operations tab: ops KPIs (latest run, success rate, API credits used, stalest symbol), run timeline strip, and a stale-symbols grid
+
+Tab navigation is URL-routed, shared via `apps/web/app/dashboard/layout.tsx` and `apps/web/components/dashboard-tab-nav.tsx`. The pipeline status tile stays on the portfolio tab so degraded worker state is never hidden behind a click.
 
 ## Why this repo is structured this way
 

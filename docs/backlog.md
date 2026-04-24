@@ -35,9 +35,9 @@ Follow-on backlog:
 - alerting for stale quote thresholds and repeated worker failures
 - richer historical charts and anomaly detection
 - comparative multi-symbol history views
-- historical batch health surfaced in the UI from `historical_job_runs`
+- historical batch health surfaced on the observability tab from `historical_job_runs` (requires a new RLS policy and shared types; the batch job row schema already exists)
 - symbol search backed by the expanded `symbol_master`
-- incident timeline page for ops debugging
+- run history table and per-run metrics chart on the observability tab — the run timeline strip already ships, so the next adds are a sortable table with expandable `error_details` and a time-series chart of `rows_written` / `api_credits_used`
 - multi-source failover if Twelve Data becomes unavailable
 
 ## Storage and historical-pipeline hardening

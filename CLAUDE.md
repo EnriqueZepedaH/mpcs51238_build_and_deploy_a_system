@@ -28,10 +28,13 @@ Market Pulse is a multi-service system that combines realtime quote ingestion wi
 - authenticates users with Clerk
 - lets users manage a private watchlist and a private portfolio of buy lots, capped at 15 distinct symbols per user
 - computes unrealized P&L in the browser from current quotes and stored cost basis
-- reads quote snapshots from Supabase
+- reads quote snapshots from Supabase and per-symbol sparkline data from `quotes_history`
 - reads long-range daily history for watchlist-scoped charts and for the portfolio "fill from historical close" action
 - subscribes to Realtime changes for `quotes_current` and `ingestion_runs`
-- renders both business data and operational health
+- renders business data and operational health on two URL-routed dashboard tabs:
+  - `/dashboard` — portfolio, watchlist, ticker-tape marquee, and historical performance chart
+  - `/dashboard/observability` — ingestion-run KPIs, a run timeline strip, and a stalest-symbols grid
+- the pipeline status tile remains visible on both tabs via the shared KPI strip so degraded worker state is never hidden behind a click
 
 ### `supabase`
 
