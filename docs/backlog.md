@@ -39,3 +39,26 @@ Follow-on backlog:
 - symbol search backed by the expanded `symbol_master`
 - incident timeline page for ops debugging
 - multi-source failover if Twelve Data becomes unavailable
+
+## Storage and historical-pipeline hardening
+
+Current state:
+- the first full curated-history backfill loaded about 4.64 million rows into `daily_price_history`
+- total project database size is now above the Supabase Free limit
+- `historical_job_runs` currently under-reports successful inserts during full backfills
+
+Backlog scope:
+- reduce long-range history storage cost without deleting core end-user functionality
+- fix batch job accounting so `historical_job_runs` reflects inserted and updated row counts accurately
+- decide whether to keep the full 553-symbol universe on Supabase, shrink the retained universe, or move long-range history to a different storage tier
+
+Candidate directions:
+- remove or redesign nonessential indexes on `daily_price_history`
+- partition or compress long-range history
+- reduce ETF/history retention scope while keeping the watchlist chart useful
+- move archival history to cheaper analytical storage while keeping recent chart-serving slices in Supabase
+
+Acceptance criteria:
+- database size returns to a sustainable operational target for the chosen hosting tier
+- historical chart queries remain fast for end users
+- `historical_job_runs` accurately reports inserts, updates, and failures for batch jobs

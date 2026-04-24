@@ -65,3 +65,5 @@ Market Pulse is a multi-service system that combines realtime quote ingestion wi
 - `symbol_master` and `daily_price_history` are the long-range storage path, not `quotes_history`
 - obvious junk symbols are rejected on write, but full market-wide symbol validation remains a backlog item
 - monthly reconciliation keeps the curated symbol dimension and recent history window healthy without claiming universal market coverage
+- the current curated universe is the live S&P 500 constituent list plus the top 50 ETFs by AUM, for a total of 553 symbols
+- watchlist users can query historical performance only for symbols they already track; chart access is intentionally scoped by watchlist membership
