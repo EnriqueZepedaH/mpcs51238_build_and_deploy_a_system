@@ -27,6 +27,31 @@ Why it exists:
 - this is the personalization layer
 - the worker uses the union of these rows to decide what to poll
 
+### `public.user_portfolio_lots`
+
+Purpose: stores each signed-in user's owned positions as individual buy lots so the dashboard can show unrealized P&L.
+
+Key columns:
+- `id`: surrogate primary key
+- `clerk_user_id`: external identity from Clerk
+- `symbol`: uppercase stock or ETF ticker
+- `shares`: number of shares in this lot (positive)
+- `cost_basis`: per-share purchase price (non-negative)
+- `purchased_at`: timestamp the lot was acquired
+- `note`: optional free-text annotation
+- `created_at`: when the row was recorded
+
+Rules:
+- unlimited lots per `(clerk_user_id, symbol)` — each buy is a separate row
+- a user is capped at 15 distinct symbols; the API enforces this on insert
+- RLS restricts reads, inserts, and deletes to the owning user
+- indexed on `(clerk_user_id, symbol)` for fast per-user aggregation
+
+Why it exists:
+- separates owned positions from watchlist interest so users can track holdings they do not watch, or watch symbols they do not own
+- the worker unions this table with `user_watchlists` when deciding what to poll, so owned symbols stay fresh even if they are not on the watchlist
+- multi-lot storage enables both an aggregated summary view and a per-buy detail view without losing cost-basis history
+
 ### `public.quotes_current`
 
 Purpose: stores the latest known quote per symbol for fast dashboard reads and Realtime updates.
@@ -101,6 +126,9 @@ Why it exists:
 - this is the reference-data dimension for long-horizon history
 - it avoids duplicating symbol text on every daily history row
 - it lets the app keep a stable `symbol_id` even if metadata changes later
+- the current loaded universe is 553 curated symbols:
+  - 503 S&P 500 constituents
+  - 50 ETFs by AUM
 
 ### `public.daily_price_history`
 
@@ -119,6 +147,11 @@ Why it exists:
 - this is the chart-serving history table
 - it is intentionally separate from `quotes_history`
 - it keeps storage lean enough for multi-year daily history
+
+Current operational note:
+- a full backfill for the 553-symbol curated universe produced about 4.64 million rows
+- most of the storage cost is currently in indexes, not the base heap table
+- this is now large enough to exceed Supabase Free, so future storage work should focus on retention, index shape, or pricing tier changes
 
 ### `public.historical_job_runs`
 
@@ -148,8 +181,8 @@ Why it exists:
 
 ## Data flow
 
-1. A user adds symbols to `user_watchlists`.
-2. The worker reads the union of tracked symbols.
+1. A user adds symbols to `user_watchlists` or buy lots to `user_portfolio_lots`.
+2. The worker reads the union of tracked symbols across both tables.
 3. The scheduler prioritizes symbols using watcher demand and staleness.
 4. The worker fetches quotes from Twelve Data.
 5. Latest state is upserted into `quotes_current`.
@@ -157,10 +190,11 @@ Why it exists:
 7. In parallel, the batch service maintains `symbol_master` and `daily_price_history`.
 8. Operational results are written into `ingestion_runs` and `historical_job_runs`.
 9. Supabase Realtime pushes `quotes_current` and `ingestion_runs` updates to the dashboard.
+10. The historical chart route reads `symbol_master` and `daily_price_history`, clamps the requested reference date to the first available stored row, and computes percentage return or price delta in the application layer.
 
 ## Security model
 
-- `user_watchlists` is user-scoped with RLS based on Clerk identity propagated into Supabase JWT claims
+- `user_watchlists` and `user_portfolio_lots` are user-scoped with RLS based on Clerk identity propagated into Supabase JWT claims
 - `quotes_current`, `quotes_history`, and `ingestion_runs` are readable only to authenticated clients with valid Supabase-compatible Clerk tokens
 - `symbol_master` and `daily_price_history` are readable only for symbols already present in the caller's watchlist
 - `historical_job_runs` is readable to authenticated users so the product can expose batch-pipeline health later if needed

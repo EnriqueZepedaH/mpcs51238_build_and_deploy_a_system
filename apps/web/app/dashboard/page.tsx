@@ -1,10 +1,19 @@
 import { UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import type { IngestionRunRecord, QuoteRecord, WatchlistItem } from "@market-pulse/shared";
+import type {
+  IngestionRunRecord,
+  PortfolioLot,
+  QuoteRecord,
+  WatchlistItem
+} from "@market-pulse/shared";
 
 import { DashboardClient } from "@/components/dashboard-client";
-import { getFreshnessTargetSeconds, getMaxWatchlistSize } from "@/lib/env";
+import {
+  getFreshnessTargetSeconds,
+  getMaxPortfolioSymbols,
+  getMaxWatchlistSize
+} from "@/lib/env";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
@@ -17,12 +26,15 @@ export default async function DashboardPage() {
   }
 
   const supabase = await getSupabaseServerClient();
-  const { data: watchlist } = await supabase
-    .from("user_watchlists")
-    .select("*")
-    .order("symbol");
+  const [{ data: watchlist }, { data: portfolioLots }] = await Promise.all([
+    supabase.from("user_watchlists").select("*").order("symbol"),
+    supabase.from("user_portfolio_lots").select("*").order("purchased_at", { ascending: false })
+  ]);
 
-  const symbols = (watchlist ?? []).map((item: { symbol: string }) => item.symbol);
+  const watchlistSymbols = (watchlist ?? []).map((item: { symbol: string }) => item.symbol);
+  const portfolioSymbols = (portfolioLots ?? []).map((item: { symbol: string }) => item.symbol);
+  const symbols = Array.from(new Set([...watchlistSymbols, ...portfolioSymbols]));
+
   const [{ data: quotes }, { data: runs }] = await Promise.all([
     symbols.length > 0
       ? supabase.from("quotes_current").select("*").in("symbol", symbols)
@@ -53,10 +65,12 @@ export default async function DashboardPage() {
       <section className="mt-8">
         <DashboardClient
           initialWatchlist={(watchlist ?? []) as WatchlistItem[]}
+          initialPortfolioLots={(portfolioLots ?? []) as PortfolioLot[]}
           initialQuotes={(quotes ?? []) as QuoteRecord[]}
           initialRun={(runs?.[0] ?? null) as IngestionRunRecord | null}
           freshnessTargetSeconds={getFreshnessTargetSeconds()}
           maxWatchlistSize={getMaxWatchlistSize()}
+          maxPortfolioSymbols={getMaxPortfolioSymbols()}
         />
       </section>
     </main>

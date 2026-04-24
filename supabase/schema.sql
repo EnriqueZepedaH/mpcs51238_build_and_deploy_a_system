@@ -97,6 +97,17 @@ create table if not exists public.historical_job_runs (
   error_details jsonb not null default '[]'::jsonb
 );
 
+create table if not exists public.user_portfolio_lots (
+  id uuid primary key default gen_random_uuid(),
+  clerk_user_id text not null,
+  symbol text not null check (symbol = upper(symbol)),
+  shares numeric(20, 8) not null check (shares > 0),
+  cost_basis numeric(18, 6) not null check (cost_basis > 0),
+  purchased_at timestamptz not null default now(),
+  note text,
+  created_at timestamptz not null default now()
+);
+
 create or replace view public.symbol_watchlist_rollup
 with (security_invoker = true) as
 select
@@ -112,6 +123,7 @@ alter table public.ingestion_runs enable row level security;
 alter table public.symbol_master enable row level security;
 alter table public.daily_price_history enable row level security;
 alter table public.historical_job_runs enable row level security;
+alter table public.user_portfolio_lots enable row level security;
 
 drop policy if exists "watchlist_select_own" on public.user_watchlists;
 create policy "watchlist_select_own"
@@ -194,6 +206,27 @@ for select
 to authenticated
 using (true);
 
+drop policy if exists "portfolio_select_own" on public.user_portfolio_lots;
+create policy "portfolio_select_own"
+on public.user_portfolio_lots
+for select
+to authenticated
+using ((((select auth.jwt()) ->> 'sub')) = clerk_user_id);
+
+drop policy if exists "portfolio_insert_own" on public.user_portfolio_lots;
+create policy "portfolio_insert_own"
+on public.user_portfolio_lots
+for insert
+to authenticated
+with check ((((select auth.jwt()) ->> 'sub')) = clerk_user_id);
+
+drop policy if exists "portfolio_delete_own" on public.user_portfolio_lots;
+create policy "portfolio_delete_own"
+on public.user_portfolio_lots
+for delete
+to authenticated
+using ((((select auth.jwt()) ->> 'sub')) = clerk_user_id);
+
 do $$
 begin
   if not exists (
@@ -251,3 +284,4 @@ create index if not exists ingestion_runs_started_at_idx on public.ingestion_run
 create index if not exists symbol_master_curated_rank_idx on public.symbol_master(curated_rank);
 create index if not exists daily_price_history_symbol_id_trading_date_idx on public.daily_price_history(symbol_id, trading_date desc);
 create index if not exists historical_job_runs_started_at_idx on public.historical_job_runs(started_at desc);
+create index if not exists user_portfolio_lots_user_symbol_idx on public.user_portfolio_lots(clerk_user_id, symbol);

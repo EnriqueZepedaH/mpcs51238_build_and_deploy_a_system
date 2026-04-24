@@ -15,29 +15,32 @@ export function createSupabaseAdmin(env: WorkerEnv): DbClient {
   });
 }
 
-export async function loadSymbolDemand(client: DbClient): Promise<SymbolDemand[]> {
-  const [{ data: watchlistRows, error: watchlistError }, { data: currentRows, error: currentError }] =
-    await Promise.all([
-      client.from("user_watchlists").select("symbol"),
-      client.from("quotes_current").select("symbol,last_ingested_at")
-    ]);
+type UserSymbolRow = { clerk_user_id: string; symbol: string };
+type CurrentQuoteRow = { symbol: string; last_ingested_at: string | null };
 
-  if (watchlistError) {
-    throw watchlistError;
-  }
-
-  if (currentError) {
-    throw currentError;
-  }
-
+export function mergeDemandSources(
+  watchlistRows: UserSymbolRow[],
+  portfolioRows: UserSymbolRow[],
+  currentRows: CurrentQuoteRow[]
+): SymbolDemand[] {
   const lastSeenBySymbol = new Map<string, string | null>();
-  for (const row of currentRows ?? []) {
+  for (const row of currentRows) {
     lastSeenBySymbol.set(row.symbol, row.last_ingested_at);
   }
 
+  const uniquePairs = new Set<string>();
+  for (const row of watchlistRows) {
+    uniquePairs.add(`${row.clerk_user_id}\u0000${row.symbol}`);
+  }
+  for (const row of portfolioRows) {
+    uniquePairs.add(`${row.clerk_user_id}\u0000${row.symbol}`);
+  }
+
   const demandBySymbol = new Map<string, number>();
-  for (const row of watchlistRows ?? []) {
-    demandBySymbol.set(row.symbol, (demandBySymbol.get(row.symbol) ?? 0) + 1);
+  for (const pair of uniquePairs) {
+    const separatorIndex = pair.indexOf("\u0000");
+    const symbol = pair.slice(separatorIndex + 1);
+    demandBySymbol.set(symbol, (demandBySymbol.get(symbol) ?? 0) + 1);
   }
 
   return [...demandBySymbol.entries()].map(([symbol, watcherCount]) => ({
@@ -45,6 +48,36 @@ export async function loadSymbolDemand(client: DbClient): Promise<SymbolDemand[]
     watcherCount,
     lastIngestedAt: lastSeenBySymbol.get(symbol) ?? null
   }));
+}
+
+export async function loadSymbolDemand(client: DbClient): Promise<SymbolDemand[]> {
+  const [
+    { data: watchlistRows, error: watchlistError },
+    { data: portfolioRows, error: portfolioError },
+    { data: currentRows, error: currentError }
+  ] = await Promise.all([
+    client.from("user_watchlists").select("clerk_user_id,symbol"),
+    client.from("user_portfolio_lots").select("clerk_user_id,symbol"),
+    client.from("quotes_current").select("symbol,last_ingested_at")
+  ]);
+
+  if (watchlistError) {
+    throw watchlistError;
+  }
+
+  if (portfolioError) {
+    throw portfolioError;
+  }
+
+  if (currentError) {
+    throw currentError;
+  }
+
+  return mergeDemandSources(
+    (watchlistRows ?? []) as UserSymbolRow[],
+    (portfolioRows ?? []) as UserSymbolRow[],
+    (currentRows ?? []) as CurrentQuoteRow[]
+  );
 }
 
 export async function createIngestionRun(client: DbClient) {

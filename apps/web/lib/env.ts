@@ -29,3 +29,7 @@ export function getFreshnessTargetSeconds(): number {
 export function getMaxWatchlistSize(): number {
   return Number(process.env.MAX_WATCHLIST_SIZE ?? "15");
 }
+
+export function getMaxPortfolioSymbols(): number {
+  return Number(process.env.MAX_PORTFOLIO_SYMBOLS ?? "15");
+}
